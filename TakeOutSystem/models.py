@@ -38,7 +38,7 @@ class turnover(models.Model):
     )
     turn_id = models.IntegerField(primary_key=True, null=False)
     account_id = models.ForeignKey('Balance_account', on_delete=models.CASCADE, null=False)
-    time = models.DateTimeField(null=False)
+    time = models.DateTimeField(auto_now_add=True, null=False)
     business_type = models.CharField(choices=TYPE_CHOICES, max_length=20, null=False)
     amount = models.FloatField(default=0, null=False)
 
@@ -77,7 +77,7 @@ class Order(models.Model):
         (u'W', u'外送')
     )
     order_id = models.IntegerField(primary_key=True, unique=True, null=False)
-    date = models.DateTimeField(null=False, auto_now=True)
+    date = models.DateTimeField(null=False, auto_now_time=True)
     order_status = models.CharField(choices=STATUS_CHOICES, max_length=20, null=False, default='预定状态')
     build_time = models.DateTimeField()
     payment_time = models.DateTimeField()

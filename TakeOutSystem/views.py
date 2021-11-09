@@ -7,7 +7,7 @@ from django.core import serializers
 from django.http import JsonResponse
 import json
 
-from .models import Employee, Balance_account, Location, Menu
+from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu
 
 
 @require_http_methods(["GET"])
@@ -79,7 +79,7 @@ def add_one_account(request):
         employee_id = Employee.objects.get(employee_id=request.GET.get('employee_id'))
         account = Balance_account(employee_id=employee_id,
                                   account_id=request.GET.get('account_id'),
-                                  balance=request.GET.get('balance')
+                                  balance=0
                                   )
         account.save()
 
@@ -113,7 +113,17 @@ def change_one_account(request):
         account_id = request.GET.get('account_id')
         account = Balance_account.objects.get(account_id=account_id)
         if request.GET.get('balance') is not None:
-            account.balance = request.GET.get('balance')
+            account.balance += request.GET.get('balance')
+
+            turn_id = request.GET.get('turn_id')
+            t = turnover(
+                turn_id=turn_id,
+                account_id=account_id,
+                business_type='充值',
+                amount=request.GET.get('balance')
+            )
+            t.save()
+
         if request.GET.get('report_loss') is not None:
             account.report_loss = request.GET.get('report_loss')
         account.save()
@@ -243,3 +253,46 @@ def change_one_dish(request):
         response['msg'] = str(e)
         response['error_num'] = 1
     return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def order_dish(request):
+    response = {}
+    try:
+        order_id = request.GET.get('order_id')
+        dish_name = request.GET.get('dish_name')
+        menu = Menu.objects.get(dish_name=dish_name)
+        amount = menu.price
+        r_staff_id = menu.r_staff_id
+
+        order = Order(
+            order_id=order_id,
+            remark=request.GET.get('remark'),
+            eat_in_store=request.GET.get('eat_in_store'),
+            specify_delivery_time=request.GET.get('specify_delivery_time'),
+            location=request.GET.get('location'),
+            payment_method='余额支付',
+            payment_amount=amount,
+            payment_account_id=Balance_account.objects.get(account_id=request.GET.get('payment_account_id')),
+            cus_id=request.GET.get('cus_id'),
+            r_staff_id=r_staff_id
+        )
+        order.save()
+
+        order_m = order_menu(
+            order_id=order,
+            dish_name=dish_name,
+            amount=amount
+        )
+        order_m.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def pay(request):

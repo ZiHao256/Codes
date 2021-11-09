@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/过程/视图.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/视图.md" afterDir="false" />
     </list>
@@ -126,7 +124,7 @@
       <workItem from="1636377465291" duration="8302000" />
       <workItem from="1636418115054" duration="13695000" />
       <workItem from="1636434954270" duration="1550000" />
-      <workItem from="1636436538036" duration="6111000" />
+      <workItem from="1636436538036" duration="10555000" />
     </task>
     <servers />
   </component>
