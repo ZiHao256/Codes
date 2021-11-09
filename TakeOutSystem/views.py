@@ -7,7 +7,7 @@ from django.core import serializers
 from django.http import JsonResponse
 import json
 
-from .models import Employee, Balance_account, Location
+from .models import Employee, Balance_account, Location, Menu
 
 
 @require_http_methods(["GET"])
@@ -169,11 +169,73 @@ def change_one_location(request):
         loc_id = request.GET.get('loc_id')
         location = Location.objects.get(loc_id=loc_id)
         if request.GET.get('building') is not None:
-            location.building=request.GET.get('building')
+            location.building = request.GET.get('building')
         if request.GET.get('floor') is not None:
-            location.floor=request.GET.get('floor')
+            location.floor = request.GET.get('floor')
         if request.GET.get('room') is not None:
-            location.room=request.GET.get('room')
+            location.room = request.GET.get('room')
+        location.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def add_one_dish(request):
+    response = {}
+    try:
+        dish_name = request.GET.get('dish_name')
+        r_staff_id = Employee.objects.get(employee_id=request.GET.get('r_staff_id'))
+        dish = Menu(
+            dish_name=dish_name,
+            r_staff_id=r_staff_id,
+            price=request.GET.get('price'),
+            picture=request.GET.get('picture'),
+            stock=request.GET.get('stock')
+        )
+        dish.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def show_dish(request):
+    response = {}
+    try:
+        dish = Menu.objects.all()
+        response['list'] = json.loads(serializers.serialize("json", dish))
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def change_one_dish(request):
+    response = {}
+    try:
+        dish_name = request.GET.get('dish_name')
+        r_staff_id = request.GET.get('r_staff_id')
+        dish = Menu.objects.get(dish_name=dish_name)
+        if request.GET.get('price') is not None:
+            dish.price = request.GET.get('price')
+        if request.GET.get('picture') is not None:
+            dish.picture = request.GET.get('picture')
+        if request.GET.get('stock'):
+            dish.stock = request.GET.get('stock')
+        dish.save()
 
         response['msg'] = 'success'
         response['error_num'] = 0

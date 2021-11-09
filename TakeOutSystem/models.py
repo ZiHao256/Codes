@@ -45,6 +45,7 @@ class turnover(models.Model):
 
 class Menu(models.Model):
     dish_name = models.CharField(max_length=255, primary_key=True, null=False)
+    r_staff_id = models.ForeignKey("Employee", on_delete=models.CASCADE, null=False)
     price = models.FloatField(null=False, default=0.0)
     picture = models.ImageField()
     stock = models.IntegerField(default=0, null=False)
