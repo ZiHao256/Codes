@@ -7,14 +7,15 @@ from django.core import serializers
 from django.http import JsonResponse
 import json
 
-from .models import Employee
+from .models import Employee, Balance_account, Location
 
 
 @require_http_methods(["GET"])
 def add_one_employee(request):
     response = {}
     try:
-        employee = Employee(employee_id=request.GET.get('employee_id'),
+        employee_id = request.GET.get('employee_id')
+        employee = Employee(employee_id=employee_id,
                             name=request.GET.get('name'),
                             password=request.GET.get('password'),
                             department=request.GET.get('department'),
@@ -34,7 +35,7 @@ def add_one_employee(request):
 def show_employee(request):
     response = {}
     try:
-        employees = Employee.objects.filter(employee_id=request.GET.get('employee_id'))
+        employees = Employee.objects.all()
         response['list'] = json.loads(serializers.serialize("json", employees))
 
         response['msg'] = 'success'
@@ -71,5 +72,112 @@ def change_one_employee(request):
     return JsonResponse(response)
 
 
+@require_http_methods("GET")
+def add_one_account(request):
+    response = {}
+    try:
+        employee_id = Employee.objects.get(employee_id=request.GET.get('employee_id'))
+        account = Balance_account(employee_id=employee_id,
+                                  account_id=request.GET.get('account_id'),
+                                  balance=request.GET.get('balance')
+                                  )
+        account.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
 
 
+@require_http_methods("GET")
+def show_account(request):
+    response = {}
+    try:
+        account = Balance_account.objects.all()
+        response['list'] = json.loads(serializers.serialize("json", account))
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def change_one_account(request):
+    response = {}
+    try:
+        account_id = request.GET.get('account_id')
+        account = Balance_account.objects.get(account_id=account_id)
+        if request.GET.get('balance') is not None:
+            account.balance = request.GET.get('balance')
+        if request.GET.get('report_loss') is not None:
+            account.report_loss = request.GET.get('report_loss')
+        account.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def add_one_location(request):
+    response = {}
+    try:
+        loc_id = request.GET.get('loc_id')
+        location = Location(
+            loc_id=loc_id,
+            building=request.GET.get('building'),
+            floor=request.GET.get('floor'),
+            room=request.GET.get('room')
+        )
+        location.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def show_location(request):
+    response = {}
+    try:
+        location = Location.objects.all()
+        response['list'] = json.loads((serializers.serialize("json", location)))
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def change_one_location(request):
+    response = {}
+    try:
+        loc_id = request.GET.get('loc_id')
+        location = Location.objects.get(loc_id=loc_id)
+        if request.GET.get('building') is not None:
+            location.building=request.GET.get('building')
+        if request.GET.get('floor') is not None:
+            location.floor=request.GET.get('floor')
+        if request.GET.get('room') is not None:
+            location.room=request.GET.get('room')
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)

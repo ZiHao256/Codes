@@ -2,21 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/过程/PosetMan.assets/6a23b55603d34e21878d9ef5b117b223" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/过程/PosetMan.assets/v2-5b9d866d676297e12f8e3a9dc3b26e2c_720w.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/过程/视图.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0002_alter_employee_employee_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0003_auto_20211108_2314.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0004_order_cus_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0005_alter_order_cus_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0006_auto_20211108_2337.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Codes/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Codes/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/过程/PosetMan.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/PosetMan.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/过程/Program-Comprehensive-Design.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/Program-Comprehensive-Design.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/过程/视图.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/视图.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +123,9 @@
       <workItem from="1636259940656" duration="647000" />
       <workItem from="1636282860815" duration="3037000" />
       <workItem from="1636377465291" duration="8302000" />
-      <workItem from="1636418115054" duration="9708000" />
+      <workItem from="1636418115054" duration="13695000" />
+      <workItem from="1636434954270" duration="1550000" />
+      <workItem from="1636436538036" duration="1617000" />
     </task>
     <servers />
   </component>
