@@ -4,10 +4,18 @@ from django.db import models
 # Create your models here.
 
 class Employee(models.Model):
+    POSITION_CHOICES=(
+        (u'A', u'admin'),
+        (u'E', u'employee'),
+        (u'S', u'r_staff'),
+        (u'M', u'r_manager'),
+        (u'D', u'r_delivery')
+    )
     employee_id = models.IntegerField(primary_key=True, null=False, unique=True)
     name = models.CharField(max_length=255, null=False)
     password = models.CharField(max_length=255, default='123456')
     department = models.CharField(max_length=255)
+    position = models.CharField(max_length=255, choices=POSITION_CHOICES, null=False, default='employee')
 
 
 class employee_phone(models.Model):
@@ -83,9 +91,9 @@ class Order(models.Model):
     payment_amount = models.FloatField(null=False)
     payment_account_id = models.ForeignKey('Balance_account', on_delete=models.CASCADE)
     payment_id = models.ForeignKey('turnover', on_delete=models.CASCADE)
-    cus_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=True, related_name='employee1')
-    r_staff_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=True, related_name='employee2')
-    r_delivery_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=True, related_name='employee3')
+    cus_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=False, related_name='employee1')
+    r_staff_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=False, related_name='employee2')
+    r_delivery_id = models.ForeignKey('Employee', on_delete=models.CASCADE, null=False, related_name='employee3')
 
 
 class order_menu(models.Model):

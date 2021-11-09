@@ -3,11 +3,11 @@ Author: Alex Ma
 title: Program Comprehensive Design
 ---
 
-[参考 HTTPie]((https://www.jianshu.com/p/65b1d65873f5))
+[详细全面的postman接口测试实战教程](https://zhuanlan.zhihu.com/p/141948716)
 
 [参考 Django](https://cloud.tencent.com/developer/article/1576599))
 
-# 0 HTTPie
+# 
 
 
 
