@@ -2,6 +2,9 @@ from django.conf.urls import url, include
 from .views import *
 
 urlpatterns = [
+    # user
+    url(r'user_login$', user_login),
+
     # administer
     url(r'add_one_employee$', add_one_employee, ),
     url(r'show_employee$', show_employee,),

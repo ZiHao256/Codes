@@ -2,13 +2,45 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core import serializers
 from django.http import JsonResponse
 import json
 from django.utils import timezone
+from .forms import UserForm
 
 from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu
+
+
+@csrf_exempt
+@require_http_methods("POST")
+def user_login(request):
+    response = {}
+    if request.method == 'POST':
+        login_form = UserForm(request.POST)
+        response['msg'] = 'check'
+
+        if login_form.is_valid():
+            employee_id = login_form.cleaned_data['employee_id']
+            password = login_form.cleaned_data['password']
+            try:
+                user = Employee.objects.get(employee_id=employee_id)
+                if user.password == password:
+                    response['list'] = json.loads(serializers.serialize("json", user))
+                    response['msg'] = 'login successfully'
+                    response['error_num'] = 0
+                    return JsonResponse(response)
+                else:
+                    response['msg'] = 'login failed'
+                    response['error_num'] = 0
+            except:
+                response['msg'] = 'not employee'
+                response['error_num'] = 1
+
+        return JsonResponse(response)
+
+    return JsonResponse(response)
 
 
 @require_http_methods(["GET"])
@@ -424,5 +456,3 @@ def delivered(request):
         response['msg'] = str(e)
         response['error_num'] = 1
     return JsonResponse(response)
-
-
