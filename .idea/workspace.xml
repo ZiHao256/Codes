@@ -36,6 +36,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/ZiHao256/Codes.git" />
+      </set>
+    </option>
+  </component>
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
       <set>
@@ -153,6 +160,10 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="679" y="28" key="CommitChangelistDialog2" timestamp="1636710571163">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="679" y="28" key="CommitChangelistDialog2/0.0.1536.864@0.0.1536.864" timestamp="1636710571163" />
     <state x="740" y="294" key="FileChooserDialogImpl" timestamp="1636252955731">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
