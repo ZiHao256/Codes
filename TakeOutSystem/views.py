@@ -27,15 +27,15 @@ def user_login(request):
             try:
                 user = Employee.objects.get(employee_id=employee_id)
                 if user.password == password:
-                    response['list'] = json.loads(serializers.serialize("json", user))
+                    # response['list'] = json.loads(serializers.serialize("json", user))
                     response['msg'] = 'login successfully'
                     response['error_num'] = 0
                     return JsonResponse(response)
                 else:
-                    response['msg'] = 'login failed'
+                    response['msg'] = 'login failed: wrong password'
                     response['error_num'] = 0
             except:
-                response['msg'] = 'not employee'
+                response['msg'] = 'do not have this employee'
                 response['error_num'] = 1
 
         return JsonResponse(response)
