@@ -298,6 +298,22 @@ def order_dish(request):
 
 
 @require_http_methods("GET")
+def show_order(request):
+    response = {}
+    try:
+        order_id = request.GET.get('order_id')
+        order = Order.objects.get(order_id=order_id)
+        response['list'] = json.loads(serializers.serialize("json", order))
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
 def pay(request):
     response = {}
     try:
@@ -319,9 +335,9 @@ def pay(request):
             )
             t.save()
 
-        order.payment_method=request.GET.get('payment_method')
-        order.payment_time=timezone.localtime()
-        order.order_status='完成支付'
+        order.payment_method = request.GET.get('payment_method')
+        order.payment_time = timezone.localtime()
+        order.order_status = '完成支付'
         order.save()
 
         response['msg'] = 'success'
@@ -338,7 +354,7 @@ def accept_dish_order(request):
     try:
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
-        order_m = order_menu.objects.get(order_id = order_id)
+        order_m = order_menu.objects.get(order_id=order_id)
         dish = Menu.objects.get(dish_name=order_m.dish_name)
         dish.stock -= 1
         dish.save()
@@ -357,11 +373,11 @@ def request_delivery(request):
     try:
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
-        order.meal_complete_time=timezone.localtime()
-        order.order_status='完成备餐'
+        order.meal_complete_time = timezone.localtime()
+        order.order_status = '完成备餐'
 
         if order.eat_in_store == '堂食':
-            order.order_status='完成送达'
+            order.order_status = '完成送达'
 
         order.save()
 
@@ -381,7 +397,7 @@ def accept_delivery_order(request):
         order = Order.objects.get(order_id=order_id)
         order.r_delivery_id = request.GET.get('r_delivery_id')
         order.accept_order_time = timezone.localtime()
-        order.order_status='完成接单'
+        order.order_status = '完成接单'
         order.save()
 
         response['msg'] = 'success'
@@ -398,8 +414,8 @@ def delivered(request):
     try:
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
-        order.delivery_time=timezone.localtime()
-        order.order_status='完成送达'
+        order.delivery_time = timezone.localtime()
+        order.order_status = '完成送达'
         order.save()
 
         response['msg'] = 'success'
@@ -408,5 +424,3 @@ def delivered(request):
         response['msg'] = str(e)
         response['error_num'] = 1
     return JsonResponse(response)
-
-

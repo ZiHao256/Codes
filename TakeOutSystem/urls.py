@@ -23,6 +23,7 @@ urlpatterns = [
     # Employee
     url(r'order_dish$', order_dish),
     url(r'pay$', pay),
+    url(r'show_order$', show_order),
 
     # r_delivery
     url(r'accept_delivery_order$', accept_delivery_order),
