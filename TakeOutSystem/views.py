@@ -424,3 +424,5 @@ def delivered(request):
         response['msg'] = str(e)
         response['error_num'] = 1
     return JsonResponse(response)
+
+
