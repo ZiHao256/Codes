@@ -4,10 +4,12 @@ from .views import *
 urlpatterns = [
     # user
     url(r'user_login$', user_login),
+    url(r'user_logout$', user_logout),
+    url(r'user_register$', user_register),
 
     # administer
     url(r'add_one_employee$', add_one_employee, ),
-    url(r'show_employee$', show_employee,),
+    url(r'show_one_employee$', show_one_employee,),
     url(r'change_one_employee$', change_one_employee,),
     url(r'add_one_account$', add_one_account),
     url(r'show_account$', show_account),

@@ -19,6 +19,7 @@ class Employee(models.Model):
     position = models.CharField(max_length=255, choices=POSITION_CHOICES, null=False, default='employee')
 
 
+
 class employee_phone(models.Model):
     employee_id = models.ForeignKey('Employee', on_delete=models.CASCADE,  null=False)
     phone_number = models.CharField(max_length=15, primary_key=True, null=False)
