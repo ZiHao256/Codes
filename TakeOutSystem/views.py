@@ -56,6 +56,7 @@ def user_login(request):
     return JsonResponse(response)
 
 
+@csrf_exempt
 @require_http_methods("POST")
 def user_logout(request):
     response = {}
@@ -70,43 +71,54 @@ def user_logout(request):
     return JsonResponse(response)
 
 
+@csrf_exempt
 @require_http_methods("POST")
 def user_register(request):
     response = {}
-    if request.session.get('is_login',None):
+    if request.session.get('is_login', None):
         response['msg'] = 'you have logined!'
         response['error_num'] = 0
+        return JsonResponse(response)
+
     if request.method == "POST":
         register_form = RegisterForm(request.POST)
         response['msg'] = 'please check content!'
         response['error_num'] = 1
+
         if register_form.is_valid():
             employee_id = register_form.cleaned_data['employee_id']
             password1 = register_form.cleaned_data['password1']
             password2 = register_form.cleaned_data['password2']
             name = register_form.cleaned_data['name']
             department = register_form.cleaned_data['department']
-            position = register_form.cleaned_data['position']
+            # position = register_form.cleaned_data['position']
+
             if password1 != password2:
                 response['msg'] = 'password is not consistent！'
                 return JsonResponse(response)
             else:
-                same_employee = Employee.objects.get(employee_id=employee_id)
-                if same_employee is not None:
+                same_employee = {}
+                try:
+                    same_employee = Employee.objects.get(employee_id=employee_id)
                     response['msg'] = 'this employee_id has existed！'
-                    response['msg'] = 2
+                    response['error_num'] = 2
                     return JsonResponse(response)
-                new_employee = Employee(
-                    employee_id=employee_id,
-                    name=name,
-                    password=password1,
-                    department=department,
-                    position=position
-                )
-                response['msg'] = 'register successfully!'
-                response['error_num'] = 3
-                new_employee.save()
-                return JsonResponse(response)
+
+                except Exception as e:
+
+                    new_employee = Employee(
+                        employee_id=employee_id,
+                        name=name,
+                        password=password1,
+                        department=department,
+                        # position=position
+                    )
+                    response['msg'] = 'register successfully!'
+                    response['error_num'] = 3
+                    new_employee.save()
+                    return JsonResponse(response)
+        return JsonResponse(response)
+    return JsonResponse(response)
 
 
 @require_http_methods(["GET"])

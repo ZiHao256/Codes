@@ -23,6 +23,6 @@ class RegisterForm(forms.Form):
     password1 = forms.CharField(label="password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="ensure password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     department = forms.CharField(label="department", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    position = forms.ChoiceField(label="position", choices=POSITION_CHOICES)
+    # position = forms.ChoiceField(label="position", choices=POSITION_CHOICES)
     # email = forms.EmailField(label="e-mail", widget=forms.EmailInput(attrs={'class': 'form-control'}))
     # sex = forms.ChoiceField(label='gender', choices=gender)
