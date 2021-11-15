@@ -8,7 +8,6 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import json
-from django.utils import timezone
 from datetime import datetime
 from .forms import UserForm, RegisterForm, ComplainForm
 
@@ -406,7 +405,7 @@ def request_delivery(request):
     try:
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
-        order.meal_complete_time = timezone.localtime()
+        order.meal_complete_time = datetime.now()
         order.order_status = '完成备餐'
 
         if order.eat_in_store == '堂食':
@@ -439,23 +438,25 @@ def order_dish(request):
 
         order = Order(
             order_id=order_id,
+            date=datetime.now(),
             order_status='订单开始',
             build_time=datetime.now(),
             remark=request.GET.get('remark'),
             eat_in_store=request.GET.get('eat_in_store'),
             specify_delivery_time=request.GET.get('specify_delivery_time'),
-            location=request.GET.get('location'),
+            location=Location.objects.get(loc_id=request.GET.get('location')),
             payment_method='余额支付',
             payment_amount=amount,
             payment_account_id=Balance_account.objects.get(account_id=request.GET.get('payment_account_id')),
-            cus_id=request.GET.get('cus_id'),
+            cus_id=Employee.objects.get(employee_id=request.GET.get('cus_id')),
             r_staff_id=r_staff_id
         )
+        print(type(request.GET.get('payment_account_id')))
         order.save()
 
         order_m = order_menu(
             order_id=order,
-            dish_name=dish_name,
+            dish_name=Menu.objects.get(dish_name=dish_name),
             amount=amount
         )
         order_m.save()
@@ -472,10 +473,13 @@ def order_dish(request):
 def show_order(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        response['list'] = json.loads(serializers.serialize("json", order))
-
+        if request.GET.get('order_id') is not None:
+            order_id = request.GET.get('order_id')
+            order = Order.objects.get(order_id=order_id)
+            response['list'] = object_to_json(order)
+        else:
+            orders = Order.objects.all()
+            response['list'] = json.loads(serializers.serialize('json', orders))
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
@@ -491,23 +495,24 @@ def pay(request):
         order_id = request.session.get('order_id', None)
         order = Order.objects.get(order_id=order_id)
 
-        if request.GET.get('payment_metohd') is None:
+        if (request.GET.get('payment_metohd') is None) or (request.GET.get('payment_method') == '余额支付'):
             # 支付方式为余额
-            balance = Balance_account.objects.get(account_id=order.payment_account_id)
-            balance -= order_menu.objects.get(order_id=order_id).amount
-            balance.save()
+            Balance = Balance_account.objects.get(account_id=order.payment_account_id_id)
+            Balance.balance -= order_menu.objects.get(order_id=order_id).amount
+            Balance.save()
 
             turn_id = request.GET.get('turn_id')
             t = turnover(
                 turn_id=turn_id,
-                account_id=order.cus_id,
+                account_id=Balance_account.objects.get(account_id=order.cus_id_id),
                 business_type='支付',
                 amount=order_menu.objects.get(order_id=order_id).amount
             )
             t.save()
 
         order.payment_method = request.GET.get('payment_method')
-        order.payment_time = timezone.localtime()
+        order.payment_time = datetime.now()
+        order.payment_id = t
         order.order_status = '完成支付'
         order.save()
 
@@ -525,7 +530,7 @@ def show_turnovers(request):
     try:
         if request.GET.get('turn_id') is None:
             turnovers = turnover.objects.all()
-            response['list'] = json.loads(serializers.serialize('json',turnovers))
+            response['list'] = json.loads(serializers.serialize('json', turnovers))
             response['error_num'] = 0
         else:
             one_turnover = turnover.objects.get(turn_id=request.GET.get('turn_id'))
@@ -535,6 +540,7 @@ def show_turnovers(request):
         response['msg'] = str(e)
         response['error_num'] = 2
     return JsonResponse(response)
+
 
 @require_http_methods("POST")
 def complain(request):
@@ -549,7 +555,7 @@ def complain(request):
 
             if complain_form.is_valid():
                 order_id = request.session.get('order_id')
-                time = timezone.localtime()
+                time = datetime.now()
                 type = complain_form.cleaned_data['type']
                 content = complain_form.cleaned_data['content']
                 feedback = '(空)'
@@ -588,7 +594,7 @@ def accept_delivery_order(request):
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
         order.r_delivery_id = request.GET.get('r_delivery_id')
-        order.accept_order_time = timezone.localtime()
+        order.accept_order_time = datetime.now()
         order.order_status = '完成接单'
         order.save()
 
@@ -606,7 +612,7 @@ def delivered(request):
     try:
         order_id = request.GET.get('order_id')
         order = Order.objects.get(order_id=order_id)
-        order.delivery_time = timezone.localtime()
+        order.delivery_time = datetime.now()
         order.order_status = '完成送达'
         order.save()
 
