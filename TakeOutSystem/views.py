@@ -542,46 +542,51 @@ def show_turnovers(request):
     return JsonResponse(response)
 
 
+@csrf_exempt
 @require_http_methods("POST")
 def complain(request):
     response = {}
-    if request.session.get('is_login', None):
-        response['msg'] = 'check content'
-        response['error_num'] = 0
-        if request.method == 'POST':
-            complain_form = ComplainForm(request.POST)
-            response['msg'] = 'check'
-            response['error_num'] = 1
+    try:
+        if request.session.get('is_login', None):
+            response['msg'] = 'check content'
+            response['error_num'] = 0
+            if request.method == 'POST':
+                complain_form = ComplainForm(request.POST)
+                response['msg'] = 'check'
+                response['error_num'] = 1
 
-            if complain_form.is_valid():
-                order_id = request.session.get('order_id')
-                time = datetime.now()
-                type = complain_form.cleaned_data['type']
-                content = complain_form.cleaned_data['content']
-                feedback = '(空)'
-                complaint = Complaint(
-                    order_id=order_id,
-                    time=time,
-                    type=type,
-                    content=content,
-                    feedback=feedback
-                )
-                complaint.save()
-                response['msg'] = 'complain successfully!'
-                response['error_num'] = 2
+                if complain_form.is_valid():
+                    order_id = complain_form.cleaned_data['order_id']
+                    time = datetime.now()
+                    # type = complain_form.cleaned_data['type']
+                    content = complain_form.cleaned_data['content']
+                    feedback = complain_form.cleaned_data['feedback']
+                    complaint = Complaint(
+                        order_id=Order.objects.get(order_id=order_id),
+                        time=time,
+                        type='',
+                        content=content,
+                        feedback=feedback
+                    )
+                    complaint.save()
+                    response['msg'] = 'complain successfully!'
+                    response['error_num'] = 2
 
+                else:
+                    response['msg'] = 'form is not valid'
+                    response['error_num'] = 3
             else:
-                response['msg'] = 'form is not valid'
-                response['error_num'] = 3
-        else:
-            response['msg'] = 'GET'
-            response['error_num'] = 4
+                response['msg'] = 'GET'
+                response['error_num'] = 4
 
-        return JsonResponse(response)
-    else:
-        response['msg'] = 'you must login!'
-        response['error_num'] = 1
-        return JsonResponse(response)
+            return JsonResponse(response)
+        else:
+            response['msg'] = 'you must login!'
+            response['error_num'] = 5
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 6
+    return JsonResponse(response)
 
 
 # R_DELIVERY
@@ -621,4 +626,47 @@ def delivered(request):
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
+    return JsonResponse(response)
+
+
+# R_MANAGER
+
+
+@require_http_methods("GET")
+def show_complaints(request):
+    response = {}
+    try:
+        complaints = Complaint.objects.all()
+        response['list'] = json.loads(serializers.serialize('json', complaints))
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@csrf_exempt
+@require_http_methods("POST")
+def change_one_complaint(request):
+    response = {}
+    try:
+        complain_form = ComplainForm(request.POST)
+        response['msg'] = 'check'
+        response['error_num'] = 0
+        if complain_form.is_valid():
+            order_id = complain_form.cleaned_data['order_id']
+            # type = complain_form.cleaned_data['type']
+            feed_back = complain_form.cleaned_data['feedback']
+            complaint = Complaint.objects.get(order_id=order_id)
+            complaint.feedback = feed_back
+            complaint.save()
+            response['msg'] = 'successfully'
+            response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 3
     return JsonResponse(response)

@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0002_alter_order_payment_id.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0003_alter_order_r_delivery_id.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0004_alter_order_meal_complete_time.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TakeOutSystem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TakeOutSystem/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/过程/视图.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/视图.md" afterDir="false" />
@@ -163,6 +159,7 @@
       <workItem from="1636765077882" duration="8781000" />
       <workItem from="1636789358477" duration="3151000" />
       <workItem from="1636962888861" duration="8200000" />
+      <workItem from="1636982134628" duration="6259000" />
     </task>
     <task id="LOCAL-00001" summary="xx">
       <created>1636710572954</created>

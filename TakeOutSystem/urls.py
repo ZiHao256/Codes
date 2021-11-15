@@ -36,6 +36,10 @@ urlpatterns = [
     url(r'accept_delivery_order$', accept_delivery_order),
     url(r'delivered$', delivered),
 
+    # r_manager
+    url(r'show_complaints$', show_complaints),
+    url(r'change_one_complaint$', change_one_complaint),
+
 
 
 ]
