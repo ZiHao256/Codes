@@ -9,13 +9,17 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import json
 from django.utils import timezone
-from .forms import UserForm, RegisterForm
+from datetime import datetime
+from .forms import UserForm, RegisterForm, ComplainForm
 
-from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu
+from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu, Complaint
 
 
 def object_to_json(obj):
     return dict([(kk, obj.__dict__[kk]) for kk in obj.__dict__.keys() if kk != "_state"])
+
+
+# USER
 
 
 @csrf_exempt
@@ -121,6 +125,9 @@ def user_register(request):
     return JsonResponse(response)
 
 
+# ADMINISTER
+
+
 @require_http_methods(["GET"])
 def add_one_employee(request):
     response = {}
@@ -191,9 +198,10 @@ def change_one_employee(request):
 def add_one_account(request):
     response = {}
     try:
-        employee_id = Employee.objects.get(employee_id=request.GET.get('employee_id'))
+        employee_id = Employee.objects.get(employee_id=int(request.GET.get('employee_id')))
         account = Balance_account(employee_id=employee_id,
                                   account_id=request.GET.get('account_id'),
+                                  open_time=datetime.now(),
                                   balance=0
                                   )
         account.save()
@@ -225,15 +233,15 @@ def show_account(request):
 def change_one_account(request):
     response = {}
     try:
-        account_id = request.GET.get('account_id')
+        account_id = int(request.GET.get('account_id'))
         account = Balance_account.objects.get(account_id=account_id)
         if request.GET.get('balance') is not None:
-            account.balance += request.GET.get('balance')
+            account.balance += int(request.GET.get('balance'))
 
             turn_id = request.GET.get('turn_id')
             t = turnover(
                 turn_id=turn_id,
-                account_id=account_id,
+                account_id=account,
                 business_type='充值',
                 amount=request.GET.get('balance')
             )
@@ -309,6 +317,9 @@ def change_one_location(request):
     return JsonResponse(response)
 
 
+# R_STAFF
+
+
 @require_http_methods("GET")
 def add_one_dish(request):
     response = {}
@@ -371,6 +382,50 @@ def change_one_dish(request):
 
 
 @require_http_methods("GET")
+def accept_dish_order(request):
+    response = {}
+    try:
+        order_id = request.GET.get('order_id')
+        order = Order.objects.get(order_id=order_id)
+        order_m = order_menu.objects.get(order_id=order_id)
+        dish = Menu.objects.get(dish_name=order_m.dish_name)
+        dish.stock -= 1
+        dish.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods("GET")
+def request_delivery(request):
+    response = {}
+    try:
+        order_id = request.GET.get('order_id')
+        order = Order.objects.get(order_id=order_id)
+        order.meal_complete_time = timezone.localtime()
+        order.order_status = '完成备餐'
+
+        if order.eat_in_store == '堂食':
+            order.order_status = '完成送达'
+
+        order.save()
+
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+# EMPLOYEE
+
+
+@require_http_methods("GET")
 def order_dish(request):
     response = {}
     try:
@@ -380,10 +435,12 @@ def order_dish(request):
         amount = menu.price
         r_staff_id = menu.r_staff_id
 
+        request.session['order_id'] = order_id
+
         order = Order(
             order_id=order_id,
             order_status='订单开始',
-            build_time=timezone.localtime(),
+            build_time=datetime.now(),
             remark=request.GET.get('remark'),
             eat_in_store=request.GET.get('eat_in_store'),
             specify_delivery_time=request.GET.get('specify_delivery_time'),
@@ -431,7 +488,7 @@ def show_order(request):
 def pay(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
+        order_id = request.session.get('order_id', None)
         order = Order.objects.get(order_id=order_id)
 
         if request.GET.get('payment_metohd') is None:
@@ -463,44 +520,65 @@ def pay(request):
 
 
 @require_http_methods("GET")
-def accept_dish_order(request):
+def show_turnovers(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order_m = order_menu.objects.get(order_id=order_id)
-        dish = Menu.objects.get(dish_name=order_m.dish_name)
-        dish.stock -= 1
-        dish.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
+        if request.GET.get('turn_id') is None:
+            turnovers = turnover.objects.all()
+            response['list'] = json.loads(serializers.serialize('json',turnovers))
+            response['error_num'] = 0
+        else:
+            one_turnover = turnover.objects.get(turn_id=request.GET.get('turn_id'))
+            response['list'] = object_to_json(one_turnover)
+            response['error_num'] = 1
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 2
     return JsonResponse(response)
 
-
-@require_http_methods("GET")
-def request_delivery(request):
+@require_http_methods("POST")
+def complain(request):
     response = {}
-    try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order.meal_complete_time = timezone.localtime()
-        order.order_status = '完成备餐'
-
-        if order.eat_in_store == '堂食':
-            order.order_status = '完成送达'
-
-        order.save()
-
-        response['msg'] = 'success'
+    if request.session.get('is_login', None):
+        response['msg'] = 'check content'
         response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
+        if request.method == 'POST':
+            complain_form = ComplainForm(request.POST)
+            response['msg'] = 'check'
+            response['error_num'] = 1
+
+            if complain_form.is_valid():
+                order_id = request.session.get('order_id')
+                time = timezone.localtime()
+                type = complain_form.cleaned_data['type']
+                content = complain_form.cleaned_data['content']
+                feedback = '(空)'
+                complaint = Complaint(
+                    order_id=order_id,
+                    time=time,
+                    type=type,
+                    content=content,
+                    feedback=feedback
+                )
+                complaint.save()
+                response['msg'] = 'complain successfully!'
+                response['error_num'] = 2
+
+            else:
+                response['msg'] = 'form is not valid'
+                response['error_num'] = 3
+        else:
+            response['msg'] = 'GET'
+            response['error_num'] = 4
+
+        return JsonResponse(response)
+    else:
+        response['msg'] = 'you must login!'
         response['error_num'] = 1
-    return JsonResponse(response)
+        return JsonResponse(response)
+
+
+# R_DELIVERY
 
 
 @require_http_methods("GET")

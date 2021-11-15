@@ -26,3 +26,14 @@ class RegisterForm(forms.Form):
     # position = forms.ChoiceField(label="position", choices=POSITION_CHOICES)
     # email = forms.EmailField(label="e-mail", widget=forms.EmailInput(attrs={'class': 'form-control'}))
     # sex = forms.ChoiceField(label='gender', choices=gender)
+
+
+class ComplainForm(forms.Form):
+    TYPE_CHOICES = (
+        (u'r_staff', u'餐厅员工'),
+        (u'r_delivery', u'餐厅外卖员')
+    )
+    order_id = forms.IntegerField(label='order_id')
+    type = forms.ChoiceField(label='type', choices=TYPE_CHOICES)
+    content = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    feedback = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
