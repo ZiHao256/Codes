@@ -404,7 +404,7 @@ def add_one_dish(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@require_http_methods(['GET'])
 def show_dish(request):
     response = {}
     try:
@@ -437,14 +437,14 @@ def change_one_dish(request):
                 response['error_num'] = 0
             except:
                 response['mas'] = 'dish_name not exsited'
-                response['error_num'] = 0
+                response['error_num'] = 1
         else:
             response['msg'] = 'form is not valid'
-            response['error_num'] = 0
+            response['error_num'] = 2
 
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
