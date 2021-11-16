@@ -37,7 +37,7 @@ class turnover(models.Model):
         (u'Z', u'支付'),
         (u'C', u'充值')
     )
-    turn_id = models.IntegerField(primary_key=True, null=False)
+    turn_id = models.AutoField(primary_key=True, null=False)
     account_id = models.ForeignKey('Balance_account', on_delete=models.CASCADE, null=False)
     time = models.DateTimeField(auto_now_add=True, null=False)
     business_type = models.CharField(choices=TYPE_CHOICES, max_length=20, null=False)
@@ -54,6 +54,7 @@ class Menu(models.Model):
 
 class Location(models.Model):
     loc_id = models.IntegerField(primary_key=True, null=False)
+    time = models.DateTimeField(null=True, )
     building = models.CharField(max_length=255, null=False)
     floor = models.IntegerField(null=False, default=1)
     room = models.CharField(max_length=255, null=False, default=0)

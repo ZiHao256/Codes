@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import json
 from datetime import datetime
-from .forms import UserForm, RegisterForm, ComplainForm
+from .forms import UserForm, RegisterForm, ComplainForm, EmployeeForm, AccountForm, MenuForm, LocationForm
 
 from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu, Complaint
 
@@ -45,14 +45,14 @@ def user_login(request):
                     request.session['name'] = user.name
                     request.session['position'] = user.position
                     response['msg'] = 'login successfully'
-                    response['error_num'] = 0
+                    response['error_num'] = 1
                     return JsonResponse(response)
                 else:
                     response['msg'] = 'login failed: wrong password'
-                    response['error_num'] = 0
-            except:
-                response['msg'] = 'do not have this employee'
-                response['error_num'] = 1
+                    response['error_num'] = 2
+            except Exception as e:
+                response['msg'] = str(e)
+                response['error_num'] = 3
 
         return JsonResponse(response)
 
@@ -63,14 +63,17 @@ def user_login(request):
 @require_http_methods("POST")
 def user_logout(request):
     response = {}
-    if not request.session.get('is_login'):
-        response['msg'] = 'have not login'
-        response['error_num'] = 0
-        return JsonResponse(response)
-    request.session.flush()
-
-    response['msg'] = 'logout successfully'
-    response['error_num'] = 0
+    try:
+        if not request.session.get('is_login'):
+            response['msg'] = 'have not login'
+            response['error_num'] = 0
+            return JsonResponse(response)
+        request.session.flush()
+        response['msg'] = 'logout successfully'
+        response['error_num'] = 1
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 2
     return JsonResponse(response)
 
 
@@ -119,7 +122,7 @@ def user_register(request):
                     response['msg'] = 'register successfully!'
                     response['error_num'] = 3
                     new_employee.save()
-                    return JsonResponse(response)
+                return JsonResponse(response)
         return JsonResponse(response)
     return JsonResponse(response)
 
@@ -127,24 +130,35 @@ def user_register(request):
 # ADMINISTER
 
 
-@require_http_methods(["GET"])
+@csrf_exempt
+@require_http_methods(["POST"])
 def add_one_employee(request):
     response = {}
     try:
-        employee_id = request.GET.get('employee_id')
-        employee = Employee(employee_id=employee_id,
-                            name=request.GET.get('name'),
-                            password=request.GET.get('password'),
-                            department=request.GET.get('department'),
-                            position=request.GET.get('position')
-                            )
-        employee.save()
+        employee_form = EmployeeForm(request.POST)
+        if employee_form.is_valid():
+            employee_id = employee_form.cleaned_data['employee_id']
+            try:
+                Employee.objects.get(employee_id=employee_id)
+                response['msg'] = 'employee_id exsited'
+                response['error_num'] = 1
+            except:
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
+                employee = Employee(employee_id=employee_id,
+                                    name=employee_form.cleaned_data['name'],
+                                    password=employee_form.cleaned_data['password'],
+                                    department=employee_form.cleaned_data['department'],
+                                    position=employee_form.cleaned_data['position']
+                                    )
+                employee.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 1
     except  Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 2
     return JsonResponse(response)
 
 
@@ -167,53 +181,69 @@ def show_one_employee(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def change_one_employee(request):
     response = {}
     try:
-        employee_id = request.GET.get('employee_id')
-        employee = Employee.objects.get(employee_id=employee_id)
-
-        if request.GET.get('name') is not None:
-            employee.name = request.GET.get('name')
-        if request.GET.get('password') is not None:
-            employee.password = request.GET.get('password')
-        if request.GET.get('department') is not None:
-            employee.department = request.GET.get('department')
-        if request.GET.get('position') is not None:
-            employee.position = request.GET.get('position')
-        employee.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
+        employee_form = EmployeeForm(request.POST)
+        if employee_form.is_valid():
+            employee_id = employee_form.cleaned_data['employee_id']
+            try:
+                employee = Employee.objects.get(employee_id=employee_id)
+                employee.name = employee_form.cleaned_data['name']
+                employee.password = employee_form.cleaned_data['password']
+                employee.department = employee_form.cleaned_data['department']
+                employee.position = employee_form.cleaned_data['position']
+                employee.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+            except Exception as e:
+                response['msg'] = 'employee does not exsited'
+                response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
 
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def add_one_account(request):
     response = {}
     try:
-        employee_id = Employee.objects.get(employee_id=int(request.GET.get('employee_id')))
-        account = Balance_account(employee_id=employee_id,
-                                  account_id=request.GET.get('account_id'),
-                                  open_time=datetime.now(),
-                                  balance=0
-                                  )
-        account.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
+        account_form = AccountForm(request.POST)
+        if account_form.is_valid():
+            account_id = account_form.cleaned_data['account_id']
+            try:
+                Balance_account.objects.get(account_id=account_id)
+                response['msg'] = 'account existed'
+                response['error_num'] = 0
+            except:
+                account = Balance_account(
+                    employee_id=Employee.objects.get(employee_id=account_form.cleaned_data['employee_id']),
+                    account_id=account_id,
+                    open_time=datetime.now(),
+                    balance=account_form.cleaned_data['balance'],
+                    report_loss=account_form.cleaned_data['report_loss']
+                )
+                account.save()
+                response['msg'] = 'success'
+                response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@require_http_methods(['GET'])
 def show_account(request):
     response = {}
     try:
@@ -228,58 +258,75 @@ def show_account(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def change_one_account(request):
     response = {}
     try:
-        account_id = int(request.GET.get('account_id'))
-        account = Balance_account.objects.get(account_id=account_id)
-        if request.GET.get('balance') is not None:
-            account.balance += int(request.GET.get('balance'))
+        account_form = AccountForm(request.POST)
+        if account_form.is_valid():
+            account_id = account_form.cleaned_data['account_id']
+            try:
+                account = Balance_account.objects.get(account_id=account_id)
+                account.balance += account_form.cleaned_data['balance']
+                account.report_loss = account_form.cleaned_data['report_loss']
+                account.save()
+                t = turnover(
+                    account_id=account,
+                    business_type='充值',
+                    time=datetime.now(),
+                    amount=account_form.cleaned_data['balance']
+                )
+                t.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+            except Exception as e:
+                response['msg'] = str(e)
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 0
 
-            turn_id = request.GET.get('turn_id')
-            t = turnover(
-                turn_id=turn_id,
-                account_id=account,
-                business_type='充值',
-                amount=request.GET.get('balance')
-            )
-            t.save()
-
-        if request.GET.get('report_loss') is not None:
-            account.report_loss = request.GET.get('report_loss')
-        account.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def add_one_location(request):
     response = {}
     try:
-        loc_id = request.GET.get('loc_id')
-        location = Location(
-            loc_id=loc_id,
-            building=request.GET.get('building'),
-            floor=request.GET.get('floor'),
-            room=request.GET.get('room')
-        )
-        location.save()
+        location_form = LocationForm(request.POST)
+        if location_form.is_valid():
+            loc_id = location_form.cleaned_data['loc_id']
+            try:
+                Location.objects.get(loc_id=loc_id)
+                response['msg'] = 'loc_id existed'
+                response['error_num'] = 0
+            except:
+                location = Location(
+                    loc_id=loc_id,
+                    building=location_form.cleaned_data['building'],
+                    floor=location_form.cleaned_data['floor'],
+                    room=location_form.cleaned_data['room'],
+                    time=datetime.now()
+                )
+                location.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@require_http_methods(['GET'])
 def show_location(request):
     response = {}
     try:
@@ -294,22 +341,28 @@ def show_location(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def change_one_location(request):
     response = {}
     try:
-        loc_id = request.GET.get('loc_id')
-        location = Location.objects.get(loc_id=loc_id)
-        if request.GET.get('building') is not None:
-            location.building = request.GET.get('building')
-        if request.GET.get('floor') is not None:
-            location.floor = request.GET.get('floor')
-        if request.GET.get('room') is not None:
-            location.room = request.GET.get('room')
-        location.save()
+        location_form = LocationForm(request.POST)
+        if location_form.is_valid():
+            try:
+                location = Location.objects.get(loc_id=location_form.cleaned_data['loc_id'])
+                location.building = location_form.cleaned_data['building']
+                location.floor = location_form.cleaned_data['floor']
+                location.room = location_form.cleaned_data['room']
+                location.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+            except Exception as e:
+                response['msg'] = str(e)
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 0
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
@@ -319,26 +372,35 @@ def change_one_location(request):
 # R_STAFF
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def add_one_dish(request):
     response = {}
     try:
-        dish_name = request.GET.get('dish_name')
-        r_staff_id = Employee.objects.get(employee_id=request.GET.get('r_staff_id'))
-        dish = Menu(
-            dish_name=dish_name,
-            r_staff_id=r_staff_id,
-            price=request.GET.get('price'),
-            picture=request.GET.get('picture'),
-            stock=request.GET.get('stock')
-        )
-        dish.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
+        menu_form = MenuForm(request.POST)
+        if menu_form.is_valid():
+            dish_name = menu_form.cleaned_data['dish_name']
+            try:
+                menu = Menu.objects.get(dish_name=dish_name)
+                response['msg'] = 'dish_name existed'
+                response['error_num'] = 0
+            except:
+                menu = Menu(
+                    dish_name=dish_name,
+                    r_staff_id=Employee.objects.get(employee_id=menu_form.cleaned_data['r_staff_id']),
+                    price=menu_form.cleaned_data['price'],
+                    # picture = menu_form.cleaned_data['picture'],
+                    stock=menu_form.cleaned_data['stock']
+                )
+                menu.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
@@ -357,23 +419,29 @@ def show_dish(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def change_one_dish(request):
     response = {}
     try:
-        dish_name = request.GET.get('dish_name')
-        r_staff_id = request.GET.get('r_staff_id')
-        dish = Menu.objects.get(dish_name=dish_name)
-        if request.GET.get('price') is not None:
-            dish.price = request.GET.get('price')
-        if request.GET.get('picture') is not None:
-            dish.picture = request.GET.get('picture')
-        if request.GET.get('stock'):
-            dish.stock = request.GET.get('stock')
-        dish.save()
+        menu_form = MenuForm(request.POST)
+        if menu_form.is_valid():
+            dish_name = menu_form.cleaned_data['dish_name']
+            try:
+                menu = Menu.objects.get(dish_name=dish_name)
+                menu.price = menu_form.cleaned_data['price']
+                # menu.picture = menu_form.cleaned_data['picture']
+                menu.stock = menu_form.cleaned_data['stock']
+                menu.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+            except:
+                response['mas'] = 'dish_name not exsited'
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 0
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1

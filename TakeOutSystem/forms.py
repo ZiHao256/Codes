@@ -37,3 +37,33 @@ class ComplainForm(forms.Form):
     # type = forms.ChoiceField(label='type', choices=TYPE_CHOICES)
     content = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     feedback = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class EmployeeForm(forms.Form):
+    employee_id = forms.IntegerField(label='employee_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    name = forms.CharField(label='name', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='password', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    department = forms.CharField(label='department', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    position = forms.CharField(label='position', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class AccountForm(forms.Form):
+    employee_id = forms.IntegerField(label='employee_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    account_id = forms.IntegerField(label='account_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    balance = forms.IntegerField(label='balance', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    report_loss = forms.IntegerField(label='report_loss', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class MenuForm(forms.Form):
+    dish_name = forms.CharField(label='dish_name', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    r_staff_id = forms.IntegerField(label='r_staff_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    price = forms.IntegerField(label='price')
+    # picture = forms.ImageField(label='picture', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    stock = forms.IntegerField(label='stock', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class LocationForm(forms.Form):
+    loc_id = forms.IntegerField(label='loc_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    building = forms.CharField(label='building', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    floor = forms.IntegerField(label='floor', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    room = forms.IntegerField(label='room', widget=forms.TextInput(attrs={'class': 'form-control'}))
