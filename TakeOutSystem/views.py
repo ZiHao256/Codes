@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import json
 from datetime import datetime
-from .forms import UserForm, RegisterForm, ComplainForm, EmployeeForm, AccountForm, MenuForm, LocationForm
+from .forms import UserForm, RegisterForm, ComplainForm, EmployeeForm, AccountForm, MenuForm, LocationForm, OrderForm
 
 from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu, Complaint
 
@@ -492,45 +492,50 @@ def request_delivery(request):
 # EMPLOYEE
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def order_dish(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        dish_name = request.GET.get('dish_name')
-        menu = Menu.objects.get(dish_name=dish_name)
-        amount = menu.price
-        r_staff_id = menu.r_staff_id
+        order_form = OrderForm(request.POST)
+        if order_form.is_valid():
+            order_id = order_form.cleaned_data['order_id']
+            try:
+                Order.objects.get(order_id=order_id)
+                response['order_id existed']
+                response['error_num'] = 0
+            except:
+                menu = Menu.objects.get(dish_name=order_form.cleaned_data['dish_name'])
+                amount = menu.price
+                order = Order(
+                    order_id=order_id,
+                    order_status='预定状态',
+                    build_time=datetime.now(),
+                    remark=order_form.cleaned_data['remark'],
+                    eat_in_store=order_form.cleaned_data['eat_int_store'],
+                    specify_delivery_time=order_form.cleaned_data['specify_delivery_time'],
+                    location = Location.objects.get(loc_id=order_form.cleaned_data['location']),
+                    payment_method=order_form.cleaned_data['payment_method'],
+                    payment_amount=amount,
+                    payment_account_id=Balance_account.objects.get(account_id=order_form.cleaned_data['payment_account_id']),
+                    cus_id=Employee.objects.get(employee_id=order_form.cleaned_data['cus_id']),
+                    r_staff_id=Employee.objects.get(employee_id=menu.r_staff_id)
+                )
+                order.save()
 
-        request.session['order_id'] = order_id
+                order_m = order_menu(
+                    order_id=order,
+                    dish_name=Menu.objects.get(dish_name=menu.dish_name),
+                    amount=amount
+                )
+                order_m.save()
 
-        order = Order(
-            order_id=order_id,
-            date=datetime.now(),
-            order_status='订单开始',
-            build_time=datetime.now(),
-            remark=request.GET.get('remark'),
-            eat_in_store=request.GET.get('eat_in_store'),
-            specify_delivery_time=request.GET.get('specify_delivery_time'),
-            location=Location.objects.get(loc_id=request.GET.get('location')),
-            payment_method='余额支付',
-            payment_amount=amount,
-            payment_account_id=Balance_account.objects.get(account_id=request.GET.get('payment_account_id')),
-            cus_id=Employee.objects.get(employee_id=request.GET.get('cus_id')),
-            r_staff_id=r_staff_id
-        )
-        print(type(request.GET.get('payment_account_id')))
-        order.save()
+                response['msg'] = 'successfully'
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 0
 
-        order_m = order_menu(
-            order_id=order,
-            dish_name=Menu.objects.get(dish_name=dish_name),
-            amount=amount
-        )
-        order_m.save()
-
-        response['msg'] = 'success'
-        response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1

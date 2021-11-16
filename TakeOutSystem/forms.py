@@ -67,3 +67,42 @@ class LocationForm(forms.Form):
     building = forms.CharField(label='building', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     floor = forms.IntegerField(label='floor', widget=forms.TextInput(attrs={'class': 'form-control'}))
     room = forms.IntegerField(label='room', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class OrderForm(forms.Form):
+    STATUS_CHOICES = (
+        (u'0', u'预定状态'),
+        (u'1', u'订单开始'),
+        (u'2', u'完成支付'),
+        (u'3', u'完成备餐'),
+        (u'4', u'完成接单'),
+        (u'5', u'完成送达')
+    )
+    METHOD_CHOICES = (
+        (u'W', u'微信支付'),
+        (u'Z', u'支付宝'),
+        (u'Y', u'余额支付')
+    )
+    EAT_CHOICES = (
+        (u'T', u'堂食'),
+        (u'W', u'外送')
+    )
+    order_id = forms.IntegerField(label='order_id')
+    dish_name = forms.CharField(label='dish_name')
+    order_status = forms.CharField(label='order_status', max_length=255)
+    build_time = forms.DateTimeField(label='build_time')
+    payment_time = forms.DateTimeField(label='payment_time')
+    meal_complete_time = forms.DateTimeField(label='meal_complete_time')
+    accept_order_time = forms.DateTimeField(label='accept_order_time')
+    delivery_time = forms.DateTimeField(label='delivery_time')
+    remark = forms.CharField(label='remark')
+    eat_int_store = forms.CharField(label='eat_in_store')
+    specify_delivery_time = forms.DateTimeField(label='specify_delivery_time')
+    location = forms.IntegerField(label='location')
+    payment_method = forms.CharField(label='payment_method')
+    payment_amount = forms.FloatField(label='payment_amount')
+    payment_account_id = forms.IntegerField(label='payment_account_id')
+    payment_id = forms.IntegerField(label='payment_id')
+    cus_id = forms.IntegerField(label='cus_id')
+    r_staff_id = forms.IntegerField(label='r_staff_id')
+    r_delivery_id = forms.IntegerField(label='r_delivery_id')
