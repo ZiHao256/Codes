@@ -407,12 +407,23 @@ def add_one_dish(request):
 @require_http_methods(['GET'])
 def show_dish(request):
     response = {}
-    try:
-        dish = Menu.objects.all()
-        response['list'] = json.loads(serializers.serialize("json", dish))
-
-        response['msg'] = 'success'
+    if not request.session.get('is_login'):
+        response['msg'] = 'you must login'
         response['error_num'] = 0
+        return JsonResponse(response)
+    try:
+        if request.GET.get('dish_name') is None:
+            dish = Menu.objects.all()
+            response['list'] = json.loads(serializers.serialize("json", dish))
+
+            response['msg'] = 'success'
+            response['error_num'] = 0
+        else:
+            dish = Menu.objects.get(dish_name=request.GET.get('dish_name'))
+            request.session['dish_name'] = dish.dish_name
+            response['list'] = object_to_json(dish)
+            response['msg'] = 'show success'
+            response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
@@ -448,41 +459,72 @@ def change_one_dish(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def accept_dish_order(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order_m = order_menu.objects.get(order_id=order_id)
-        dish = Menu.objects.get(dish_name=order_m.dish_name)
-        dish.stock -= 1
-        dish.save()
+        if request.session.get('is_login'): #and request.session.get('position') == 'r_staff':
+            order_form = OrderForm(request.POST)
+            if order_form.is_valid():
+                order_id = order_form.cleaned_data['order_id']
+                order = Order.objects.get(order_id=order_id)
+                if order.order_status == '完成支付':
+                    order_m = order_menu.objects.get(order_id=order_id)
+                    dish = Menu.objects.get(dish_name=order_m.dish_name.dish_name)
+                    dish.stock -= 1
+                    dish.save()
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
+                    order.meal_complete_time = datetime.now()
+                    order.save()
+
+                    response['msg'] = 'accept_dish_order successfully'
+                    response['error_num'] = 0
+                else:
+                    response['msg'] = '对方还未完成支付'
+                    response['error_num'] = 0
+            else:
+                response['msg'] = 'form is not valid'
+                response['error_num'] = 1
+        else:
+            response['msg'] = 'you are not r_staff or not login'
+            response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 2
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def request_delivery(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order.meal_complete_time = datetime.now()
-        order.order_status = '完成备餐'
+        if request.session.get('is_login'): #and request.session.get('position')=='r_staff':
+            order_form = OrderForm(request.POST)
+            if order_form.is_valid():
 
-        if order.eat_in_store == '堂食':
-            order.order_status = '完成送达'
+                order_id = order_form.cleaned_data['order_id']
+                order = Order.objects.get(order_id=order_id)
+                if order.order_status=='完成支付':
+                    order.order_status = '完成备餐'
 
-        order.save()
+                    if order.eat_in_store == '堂食':
+                        order.order_status = '完成送达'
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
+                    order.save()
+
+                    response['msg'] = 'request_delivery successfully'
+                    response['error_num'] = 0
+                else:
+                    response['msg'] = '对方未完成支付'
+                    response['error_num'] = 0
+            else:
+                response['msg'] = 'form is not valid'
+                response['error_num'] = 0
+        else:
+            response['msg'] = 'not login or not r_staff'
+            response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
@@ -496,16 +538,20 @@ def request_delivery(request):
 @require_http_methods(['POST'])
 def order_dish(request):
     response = {}
+    if not request.session.get('is_login', None):
+        response['msg'] = 'you must login'
+        response['error_num'] = -1
+        return JsonResponse(response)
     try:
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
             order_id = order_form.cleaned_data['order_id']
             try:
                 Order.objects.get(order_id=order_id)
-                response['order_id existed']
+                response['msg'] = 'order_id existed'
                 response['error_num'] = 0
             except:
-                menu = Menu.objects.get(dish_name=order_form.cleaned_data['dish_name'])
+                menu = Menu.objects.get(dish_name=request.session.get('dish_name'))
                 amount = menu.price
                 order = Order(
                     order_id=order_id,
@@ -518,10 +564,11 @@ def order_dish(request):
                     payment_method=order_form.cleaned_data['payment_method'],
                     payment_amount=amount,
                     payment_account_id=Balance_account.objects.get(account_id=order_form.cleaned_data['payment_account_id']),
-                    cus_id=Employee.objects.get(employee_id=order_form.cleaned_data['cus_id']),
-                    r_staff_id=Employee.objects.get(employee_id=menu.r_staff_id)
+                    cus_id=Employee.objects.get(employee_id=request.session.get('employee_id')),
+                    r_staff_id=menu.r_staff_id
                 )
                 order.save()
+                request.session['order_id'] = order_id
 
                 order_m = order_menu(
                     order_id=order,
@@ -530,15 +577,15 @@ def order_dish(request):
                 )
                 order_m.save()
 
-                response['msg'] = 'successfully'
-                response['error_num'] = 0
+                response['msg'] = 'order_dish successfully'
+                response['error_num'] = 1
         else:
             response['msg'] = 'form is not valid'
-            response['error_num'] = 0
+            response['error_num'] = 2
 
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
@@ -561,39 +608,48 @@ def show_order(request):
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def pay(request):
     response = {}
-    try:
-        order_id = request.session.get('order_id', None)
-        order = Order.objects.get(order_id=order_id)
-
-        if (request.GET.get('payment_metohd') is None) or (request.GET.get('payment_method') == '余额支付'):
-            # 支付方式为余额
-            Balance = Balance_account.objects.get(account_id=order.payment_account_id_id)
-            Balance.balance -= order_menu.objects.get(order_id=order_id).amount
-            Balance.save()
-
-            turn_id = request.GET.get('turn_id')
-            t = turnover(
-                turn_id=turn_id,
-                account_id=Balance_account.objects.get(account_id=order.cus_id_id),
-                business_type='支付',
-                amount=order_menu.objects.get(order_id=order_id).amount
-            )
-            t.save()
-
-        order.payment_method = request.GET.get('payment_method')
-        order.payment_time = datetime.now()
-        order.payment_id = t
-        order.order_status = '完成支付'
-        order.save()
-
-        response['msg'] = 'success'
+    if not request.session.get('is_login'):
+        response['msg'] = 'you must login'
         response['error_num'] = 0
+        return JsonResponse(response)
+    try:
+        order_form = OrderForm(request.POST)
+        if order_form.is_valid():
+            order_id = request.session.get('order_id', None)
+            # print(order_id)
+            order = Order.objects.get(order_id=order_id)
+
+            if order_form.cleaned_data['payment_method'] == '余额支付':
+                # 支付方式为余额
+                Balance = Balance_account.objects.get(account_id=order.payment_account_id_id)
+                Balance.balance -= order_menu.objects.get(order_id=order_id).amount
+                Balance.save()
+
+                t = turnover(
+                    account_id=Balance_account.objects.get(account_id=order.cus_id_id),
+                    business_type='支付',
+                    amount=order_menu.objects.get(order_id=order_id).amount
+                )
+                t.save()
+
+            order.payment_method = order_form.cleaned_data['payment_method']
+            order.payment_time = datetime.now()
+            order.payment_id = t
+            order.order_status = '完成支付'
+            order.save()
+            response['msg'] = 'pay successfully'
+            response['error_num'] = 1
+        else:
+            response['msg'] = 'form is not valid'
+            response['error_num'] = 2
+
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 3
     return JsonResponse(response)
 
 
@@ -601,13 +657,15 @@ def pay(request):
 def show_turnovers(request):
     response = {}
     try:
-        if request.GET.get('turn_id') is None:
+        if request.GET.get('account_id') is None:
             turnovers = turnover.objects.all()
             response['list'] = json.loads(serializers.serialize('json', turnovers))
+            response['msg'] = 'show_turnovers successfully'
             response['error_num'] = 0
         else:
-            one_turnover = turnover.objects.get(turn_id=request.GET.get('turn_id'))
-            response['list'] = object_to_json(one_turnover)
+            turnovers = turnover.objects.filter(account_id=request.GET.get('account_id'))
+            response['list'] = json.loads(serializers.serialize('json', turnovers))
+            response['msg'] = 'show_turnovers successfully'
             response['error_num'] = 1
     except Exception as e:
         response['msg'] = str(e)
@@ -665,40 +723,69 @@ def complain(request):
 # R_DELIVERY
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def accept_delivery_order(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order.r_delivery_id = request.GET.get('r_delivery_id')
-        order.accept_order_time = datetime.now()
-        order.order_status = '完成接单'
-        order.save()
+        if request.session.get('is_login'): #and request.session.get('position') == 'r_delivery':
+            order_form = OrderForm(request.POST)
+            if order_form.is_valid():
+                order_id = order_form.cleaned_data['order_id']
+                order = Order.objects.get(order_id=order_id)
+                if order.order_status == '完成备餐':
+                    order.r_delivery_id = Employee.objects.get(employee_id=request.session.get('employee_id'))
+                    order.accept_order_time = datetime.now()
+                    order.order_status = '完成接单'
+                    order.save()
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
+                    response['msg'] = 'accept_delivery_order successfully'
+                    response['error_num'] = 0
+                else:
+                    response['msg'] = '商家未完成配餐'
+                    response['error_num'] = 1
+            else:
+                response['msg'] =' form is not valid'
+                response['error_num'] = 2
+        else:
+            response['msg'] = 'not login or not r_delivery'
+            response['error_num'] = 3
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 4
     return JsonResponse(response)
 
 
-@require_http_methods("GET")
+@csrf_exempt
+@require_http_methods(['POST'])
 def delivered(request):
     response = {}
     try:
-        order_id = request.GET.get('order_id')
-        order = Order.objects.get(order_id=order_id)
-        order.delivery_time = datetime.now()
-        order.order_status = '完成送达'
-        order.save()
+        if request.session.get('is_login'): # and request.session.get('position') == 'r_delivery':
+            order_form = OrderForm(request.POST)
+            if order_form.is_valid():
 
-        response['msg'] = 'success'
-        response['error_num'] = 0
+                order_id = order_form.cleaned_data['order_id']
+                order = Order.objects.get(order_id=order_id)
+                if order.order_status == '完成接单':
+                    order.delivery_time = datetime.now()
+                    order.order_status = '完成送达'
+                    order.save()
+
+                    response['msg'] = 'delivered successfully'
+                    response['error_num'] = 0
+                else:
+                    response['msg'] = 'r_delivery 未完成接单'
+                    response['error_num'] = 1
+            else:
+                response['msg'] = 'form is not valid'
+                response['error_num'] = 2
+        else:
+            response['msg'] = 'not login or not r_delivery'
+            response['error_num'] = 3
     except Exception as e:
         response['msg'] = str(e)
-        response['error_num'] = 1
+        response['error_num'] = 4
     return JsonResponse(response)
 
 

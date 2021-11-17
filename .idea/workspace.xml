@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0007_remove_order_date.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TakeOutSystem/migrations/0008_order_date.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/views.py" afterDir="false" />
@@ -162,6 +160,7 @@
       <workItem from="1636962888861" duration="8200000" />
       <workItem from="1636982134628" duration="7165000" />
       <workItem from="1637023443180" duration="15316000" />
+      <workItem from="1637133580924" duration="8572000" />
     </task>
     <task id="LOCAL-00001" summary="xx">
       <created>1636710572954</created>
@@ -236,11 +235,11 @@
     </state>
     <state x="274" y="194" key="Vcs.Push.Dialog.v2/0.0.1536.864@0.0.1536.864" timestamp="1636710749642" />
     <state x="1018" y="275" key="Vcs.Push.Dialog.v2/0.0.1920.1080@0.0.1920.1080" timestamp="1636381987569" />
-    <state x="882" y="188" width="672" height="543" key="search.everywhere.popup" timestamp="1637028175347">
-      <screen x="0" y="0" width="1536" height="864" />
+    <state x="1103" y="235" width="672" height="678" key="search.everywhere.popup" timestamp="1637140574412">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="882" y="188" width="672" height="543" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1637028175347" />
-    <state x="1103" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1636773808872" />
+    <state x="1103" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1637140574412" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Codes$demo.coverage" NAME="demo Coverage Results" MODIFIED="1636186459565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
