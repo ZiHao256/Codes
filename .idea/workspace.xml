@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="" />
+    <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TakeOutSystem/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/forms.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -157,6 +160,11 @@
       <workItem from="1637023443180" duration="15316000" />
       <workItem from="1637133580924" duration="8572000" />
       <workItem from="1637142807838" duration="20000" />
+      <workItem from="1637462768358" duration="37000" />
+      <workItem from="1637462838218" duration="21000" />
+      <workItem from="1637465574509" duration="85000" />
+      <workItem from="1637465788456" duration="505000" />
+      <workItem from="1637466575635" duration="100000" />
     </task>
     <task id="LOCAL-00001" summary="xx">
       <created>1636710572954</created>

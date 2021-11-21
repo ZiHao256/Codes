@@ -66,7 +66,7 @@ class LocationForm(forms.Form):
     loc_id = forms.IntegerField(label='loc_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
     building = forms.CharField(label='building', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     floor = forms.IntegerField(label='floor', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    room = forms.IntegerField(label='room', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    room = forms.CharField(label='room', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class OrderForm(forms.Form):
