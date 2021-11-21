@@ -551,7 +551,7 @@ def order_dish(request):
                 response['msg'] = 'order_id existed'
                 response['error_num'] = 0
             except:
-                menu = Menu.objects.get(dish_name=request.session.get('dish_name'))
+                menu = Menu.objects.get(dish_name=order_form.cleaned_data['dish_name'])
                 amount = menu.price
                 order = Order(
                     order_id=order_id,
@@ -619,7 +619,7 @@ def pay(request):
     try:
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
-            order_id = request.session.get('order_id', None)
+            order_id = order_form.cleaned_data['order_id']
             # print(order_id)
             order = Order.objects.get(order_id=order_id)
 
