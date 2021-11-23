@@ -558,7 +558,7 @@ def order_dish(request):
                     order_status='预定状态',
                     build_time=datetime.now(),
                     remark=order_form.cleaned_data['remark'],
-                    eat_in_store=order_form.cleaned_data['eat_int_store'],
+                    eat_in_store=order_form.cleaned_data['eat_in_store'],
                     specify_delivery_time=order_form.cleaned_data['specify_delivery_time'],
                     location = Location.objects.get(loc_id=order_form.cleaned_data['location']),
                     payment_method=order_form.cleaned_data['payment_method'],
@@ -593,14 +593,16 @@ def order_dish(request):
 def show_order(request):
     response = {}
     try:
-        if request.GET.get('order_id') is not None:
-            order_id = request.GET.get('order_id')
-            order = Order.objects.get(order_id=order_id)
-            response['list'] = object_to_json(order)
-        else:
+        if request.session.get('position') == 'employee':
+            orders = Order.objects.filter(cus_id=request.session.get('employee_id'))
+        elif request.session.get('position') == 'r_staff':
+            orders = Order.objects.filter(r_staff_id=request.session.get('employee_id'))
+        elif request.session.get('position') == 'r_delivery':
+            orders = Order.objects.filter(order_status='完成备餐')
+        elif request.session.get('position') == 'admin' or request.session.get('position') == 'r_manager':
             orders = Order.objects.all()
-            response['list'] = json.loads(serializers.serialize('json', orders))
-        response['msg'] = 'success'
+        response['list'] = object_to_json(orders)
+        response['msg'] = 'successfully'
         response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
