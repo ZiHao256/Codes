@@ -4,6 +4,7 @@
     <list default="true" id="1c9e84fc-3fea-43b5-9735-8027822bab94" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TakeOutSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TakeOutSystem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakeOutSystem/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/过程/视图.md" beforeDir="false" afterPath="$PROJECT_DIR$/过程/视图.md" afterDir="false" />
     </list>
@@ -170,6 +171,8 @@
       <workItem from="1637498490637" duration="1286000" />
       <workItem from="1637571495283" duration="331000" />
       <workItem from="1637679917627" duration="815000" />
+      <workItem from="1637681325165" duration="855000" />
+      <workItem from="1637727058693" duration="1335000" />
     </task>
     <task id="LOCAL-00001" summary="xx">
       <created>1636710572954</created>

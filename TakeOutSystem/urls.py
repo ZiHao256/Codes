@@ -39,6 +39,8 @@ urlpatterns = [
     # r_manager
     url(r'show_complaints$', show_complaints),
     url(r'change_one_complaint$', change_one_complaint),
+    url(r'show_r_staff$', show_r_staff),
+    url(r'show_sales$', show_sales),
 
 
 

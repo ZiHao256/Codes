@@ -97,7 +97,7 @@ def user_register(request):
             password2 = register_form.cleaned_data['password2']
             name = register_form.cleaned_data['name']
             department = register_form.cleaned_data['department']
-            # position = register_form.cleaned_data['position']
+            position = register_form.cleaned_data['position']
 
             if password1 != password2:
                 response['msg'] = 'password is not consistent！'
@@ -117,7 +117,7 @@ def user_register(request):
                         name=name,
                         password=password1,
                         department=department,
-                        # position=position
+                        position=position
                     )
                     response['msg'] = 'register successfully!'
                     response['error_num'] = 3
@@ -464,7 +464,7 @@ def change_one_dish(request):
 def accept_dish_order(request):
     response = {}
     try:
-        if request.session.get('is_login'): #and request.session.get('position') == 'r_staff':
+        if request.session.get('is_login'):  # and request.session.get('position') == 'r_staff':
             order_form = OrderForm(request.POST)
             if order_form.is_valid():
                 order_id = order_form.cleaned_data['order_id']
@@ -500,13 +500,13 @@ def accept_dish_order(request):
 def request_delivery(request):
     response = {}
     try:
-        if request.session.get('is_login'): #and request.session.get('position')=='r_staff':
+        if request.session.get('is_login'):  # and request.session.get('position')=='r_staff':
             order_form = OrderForm(request.POST)
             if order_form.is_valid():
 
                 order_id = order_form.cleaned_data['order_id']
                 order = Order.objects.get(order_id=order_id)
-                if order.order_status=='完成支付':
+                if order.order_status == '完成支付':
                     order.order_status = '完成备餐'
 
                     if order.eat_in_store == '堂食':
@@ -560,10 +560,11 @@ def order_dish(request):
                     remark=order_form.cleaned_data['remark'],
                     eat_in_store=order_form.cleaned_data['eat_in_store'],
                     specify_delivery_time=order_form.cleaned_data['specify_delivery_time'],
-                    location = Location.objects.get(loc_id=order_form.cleaned_data['location']),
+                    location=Location.objects.get(loc_id=order_form.cleaned_data['location']),
                     payment_method=order_form.cleaned_data['payment_method'],
                     payment_amount=amount,
-                    payment_account_id=Balance_account.objects.get(account_id=order_form.cleaned_data['payment_account_id']),
+                    payment_account_id=Balance_account.objects.get(
+                        account_id=order_form.cleaned_data['payment_account_id']),
                     cus_id=Employee.objects.get(employee_id=request.session.get('employee_id')),
                     r_staff_id=menu.r_staff_id
                 )
@@ -601,7 +602,7 @@ def show_order(request):
             orders = Order.objects.filter(order_status='完成备餐')
         elif request.session.get('position') == 'admin' or request.session.get('position') == 'r_manager':
             orders = Order.objects.all()
-        response['list'] = object_to_json(orders)
+        response['list'] = json.loads(serializers.serialize('json', orders))
         response['msg'] = 'successfully'
         response['error_num'] = 0
     except Exception as e:
@@ -730,7 +731,7 @@ def complain(request):
 def accept_delivery_order(request):
     response = {}
     try:
-        if request.session.get('is_login'): #and request.session.get('position') == 'r_delivery':
+        if request.session.get('is_login'):  # and request.session.get('position') == 'r_delivery':
             order_form = OrderForm(request.POST)
             if order_form.is_valid():
                 order_id = order_form.cleaned_data['order_id']
@@ -747,7 +748,7 @@ def accept_delivery_order(request):
                     response['msg'] = '商家未完成配餐'
                     response['error_num'] = 1
             else:
-                response['msg'] =' form is not valid'
+                response['msg'] = ' form is not valid'
                 response['error_num'] = 2
         else:
             response['msg'] = 'not login or not r_delivery'
@@ -763,7 +764,7 @@ def accept_delivery_order(request):
 def delivered(request):
     response = {}
     try:
-        if request.session.get('is_login'): # and request.session.get('position') == 'r_delivery':
+        if request.session.get('is_login'):  # and request.session.get('position') == 'r_delivery':
             order_form = OrderForm(request.POST)
             if order_form.is_valid():
 
@@ -792,6 +793,36 @@ def delivered(request):
 
 
 # R_MANAGER
+@require_http_methods(['GET'])
+def show_r_staff(request):
+    response = {}
+    try:
+        employees = Employee.objects.filter(position='r_staff')
+        response['list'] = json.loads(serializers.serialize('json', employees))
+        response['msg'] = 'successfully'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+
+    return JsonResponse(response)
+
+
+@require_http_methods(['GET'])
+def show_sales(request):
+    response = {}
+    try:
+        r_staff_id = request.GET.get('employee_id')
+        print(r_staff_id)
+        sales = order_menu.objects.filter(dish_name=Menu.objects.get(r_staff_id=r_staff_id).dish_name)
+        response['list'] = json.loads(serializers.serialize('json', sales))
+        response['msg'] = 'successfully'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+
+    return JsonResponse(response)
 
 
 @require_http_methods("GET")
