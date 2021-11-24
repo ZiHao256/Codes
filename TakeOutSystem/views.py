@@ -387,7 +387,7 @@ def add_one_dish(request):
             except:
                 menu = Menu(
                     dish_name=dish_name,
-                    r_staff_id=Employee.objects.get(employee_id=menu_form.cleaned_data['r_staff_id']),
+                    r_staff_id=Employee.objects.get(employee_id=request.session.get('employee_id')),
                     price=menu_form.cleaned_data['price'],
                     # picture = menu_form.cleaned_data['picture'],
                     stock=menu_form.cleaned_data['stock']
@@ -814,7 +814,7 @@ def show_r_staff_dishes(request):
     try:
         r_staff_id = request.GET.get('employee_id')
         dish_names = Menu.objects.filter(r_staff_id=r_staff_id)
-        response['list'] = json.loads(serializers.serialize('json',dish_names))
+        response['list'] = json.loads(serializers.serialize('json', dish_names))
         response['msg'] = 'successfully'
         response['error_num'] = 0
     except Exception as e:
