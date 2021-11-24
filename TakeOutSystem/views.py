@@ -809,19 +809,32 @@ def show_r_staff(request):
 
 
 @require_http_methods(['GET'])
-def show_sales(request):
+def show_r_staff_dishes(request):
     response = {}
     try:
         r_staff_id = request.GET.get('employee_id')
-        print(r_staff_id)
-        sales = order_menu.objects.filter(dish_name=Menu.objects.get(r_staff_id=r_staff_id).dish_name)
-        response['list'] = json.loads(serializers.serialize('json', sales))
+        dish_names = Menu.objects.filter(r_staff_id=r_staff_id)
+        response['list'] = json.loads(serializers.serialize('json',dish_names))
         response['msg'] = 'successfully'
         response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 1
 
+    return JsonResponse(response)
+
+
+@require_http_methods(['GET'])
+def show_sales(request):
+    response = {}
+    try:
+        sales = order_menu.objects.filter(dish_name=request.GET.get('dish_name'))
+        response['list'] = json.loads(serializers.serialize('json', sales))
+        response['msg'] = 'successfully'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
     return JsonResponse(response)
 
 
