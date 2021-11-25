@@ -48,7 +48,7 @@ def order_dish(request):
                     build_time=datetime.now(),
                     remark=order_form.cleaned_data['remark'],
                     eat_in_store=order_form.cleaned_data['eat_in_store'],
-                    specify_delivery_time=specify__delivery_time,
+                    specify_delivery_time= specify_delivery_time,
                     location=Location.objects.get(loc_id=order_form.cleaned_data['location']),
                     payment_method=order_form.cleaned_data['payment_method'],
                     payment_amount=amount,
@@ -160,16 +160,21 @@ def pay(request):
 def show_turnovers(request):
     response = {}
     try:
-        if request.GET.get('account_id') is None:
-            turnovers = turnover.objects.all()
-            response['list'] = json.loads(serializers.serialize('json', turnovers))
-            response['msg'] = 'show_turnovers successfully'
-            response['error_num'] = 0
-        else:
-            turnovers = turnover.objects.filter(account_id=request.GET.get('account_id'))
-            response['list'] = json.loads(serializers.serialize('json', turnovers))
-            response['msg'] = 'show_turnovers successfully'
-            response['error_num'] = 1
+        account_id = Balance_account.objects.get(employee_id=request.session.get('employee_id')).account_id
+        turns = turnover.objects.filter(account_id=account_id)
+
+        listall = json.loads(serializers.serialize("json", turns))
+        total = len(listall)
+        pagesize = int(request.GET.get('pagesize'))
+        pagenum = int(request.GET.get('pagenum'))
+        if pagesize > total:
+            pagesize = total
+        sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
+        
+        response['total'] = total
+        response['list'] = sort_ls[pagenum - 1]
+        response['error_num'] = 1
+        response['msg'] = 'successfully'
     except Exception as e:
         response['msg'] = str(e)
         response['error_num'] = 2

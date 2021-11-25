@@ -61,8 +61,17 @@ def show_dish(request):
         if request.GET.get('dish_name') is None:
             dish = Menu.objects.all()
             orders_total = Order.objects.all()
+
+            listall = json.loads(serializers.serialize("json", dish))
+            total = len(listall)
+            pagesize = int(request.GET.get('pagesize'))
+            pagenum = int(request.GET.get('pagenum'))
+            if pagesize > total:
+                pagesize = total
+            sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
+
             response['total'] = len(orders_total) + 20001
-            response['list'] = json.loads(serializers.serialize("json", dish))
+            response['list'] = sort_ls[pagenum-1]
             response['msg'] = 'success'
             response['error_num'] = 0
         else:
