@@ -83,7 +83,7 @@ def show_order(request):
         elif request.session.get('position') == 'r_staff':
             orders = Order.objects.filter(r_staff_id=request.session.get('employee_id'))
         elif request.session.get('position') == 'r_delivery':
-            orders = Order.objects.filter(order_status='完成备餐')
+            orders = Order.objects.filter(Q(Q(order_status='完成备餐') | Q(order_status='骑手已接单')))
         elif request.session.get('position') == 'admin' or request.session.get('position') == 'r_manager':
             orders = Order.objects.all()
         response['list'] = json.loads(serializers.serialize('json', orders))
@@ -182,7 +182,7 @@ def complain(request):
                     complaint = Complaint(
                         order_id=Order.objects.get(order_id=order_id),
                         time=time,
-                        type='',
+                        type=type,
                         content=content,
                         feedback=feedback
                     )

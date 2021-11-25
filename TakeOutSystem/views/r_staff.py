@@ -60,13 +60,16 @@ def show_dish(request):
     try:
         if request.GET.get('dish_name') is None:
             dish = Menu.objects.all()
+            orders_total = Order.objects.all()
+            response['total'] = len(orders_total)
             response['list'] = json.loads(serializers.serialize("json", dish))
-
             response['msg'] = 'success'
             response['error_num'] = 0
         else:
             dish = Menu.objects.get(dish_name=request.GET.get('dish_name'))
             request.session['dish_name'] = dish.dish_name
+            orders_total = Order.objects.all()
+            response['total'] = len(orders_total)
             response['list'] = object_to_json(dish)
             response['msg'] = 'show success'
             response['error_num'] = 0
@@ -125,6 +128,7 @@ def accept_dish_order(request):
                     order.save()
 
                     response['msg'] = 'accept_dish_order successfully'
+                    order.order_status = '商家已接单'
                     response['error_num'] = 0
                 else:
                     response['msg'] = '对方还未完成支付'
@@ -152,7 +156,7 @@ def request_delivery(request):
 
                 order_id = order_form.cleaned_data['order_id']
                 order = Order.objects.get(order_id=order_id)
-                if order.order_status == '完成支付':
+                if order.order_status == '商家已接单':
                     order.order_status = '完成备餐'
 
                     if order.eat_in_store == '堂食':

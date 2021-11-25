@@ -57,15 +57,29 @@ def show_one_employee(request):
     try:
         employee = {}
         if request.GET.get('employee_id') is not None:
+            print(( request.GET.get('employee_id')))
             employee = Employee.objects.get(employee_id=request.GET.get('employee_id'))
             response['list'] = object_to_json(employee)
+            total = 1
+            response['error_num'] = -1
         else:
+            # 返回值增加了分页，把数据分成每页pagesize个数据
             employee = Employee.objects.all()
-            response['list'] = json.loads(serializers.serialize("json", employee))
+            listall =  json.loads(serializers.serialize("json", employee))
+            total = int(len(listall))
+            pagesize = int(request.GET.get('pagesize'))
+            pagenum = int(request.GET.get('pagenum'))
+            # print(pagesize, pagenum)
+            if pagesize>total:
+                pagesize = total
+            sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
+            response['list'] = sort_ls[pagenum-1]
+            response['error_num'] = 0
         response['msg'] = 'success'
-        response['error_num'] = 0
+        response['total'] = total
     except  Exception as e:
         response['msg'] = str(e)
+        print(str(e))
         response['error_num'] = 1
     return JsonResponse(response)
 
@@ -137,8 +151,20 @@ def show_account(request):
     response = {}
     try:
         account = Balance_account.objects.all()
-        response['list'] = json.loads(serializers.serialize("json", account))
+        # response['list'] = json.loads(serializers.serialize("json", account))
+        listall= json.loads(serializers.serialize("json", account))
+        response['list'] = listall
+        total = int(len(listall))
 
+        pagesize = int(request.GET.get('pagesize'))
+        pagenum = int(request.GET.get('pagenum'))
+        print(pagesize, pagenum,total)
+        if pagesize > total:
+            pagesize = total
+        sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
+        response['list'] = sort_ls[pagenum - 1]
+
+        response['total'] = total
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
@@ -196,7 +222,7 @@ def add_one_location(request):
                 response['error_num'] = 0
             except:
                 location = Location(
-                    loc_id=loc_id,
+                    loc_id=int(loc_id),
                     building=location_form.cleaned_data['building'],
                     floor=location_form.cleaned_data['floor'],
                     room=location_form.cleaned_data['room'],
@@ -221,7 +247,9 @@ def show_location(request):
     try:
         location = Location.objects.all()
         response['list'] = json.loads((serializers.serialize("json", location)))
-
+        listall = json.loads((serializers.serialize("json", location)))
+        response['list'] = listall
+        print(listall)
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:

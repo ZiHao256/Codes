@@ -29,7 +29,7 @@ def accept_delivery_order(request):
                 if order.order_status == '完成备餐':
                     order.r_delivery_id = Employee.objects.get(employee_id=request.session.get('employee_id'))
                     order.accept_order_time = datetime.now()
-                    order.order_status = '完成接单'
+                    order.order_status = '骑手已接单'
                     order.save()
 
                     response['msg'] = 'accept_delivery_order successfully'
@@ -60,7 +60,7 @@ def delivered(request):
 
                 order_id = order_form.cleaned_data['order_id']
                 order = Order.objects.get(order_id=order_id)
-                if order.order_status == '完成接单':
+                if order.order_status == '骑手已接单':
                     order.delivery_time = datetime.now()
                     order.order_status = '完成送达'
                     order.save()

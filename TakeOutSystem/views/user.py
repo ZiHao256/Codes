@@ -21,6 +21,7 @@ def user_login(request):
     if request.session.get('is_login', None):
         response['msg'] = 'this employee has logined'
         response['error_num'] = 0
+        response['position'] = request.session.get('position')
         return JsonResponse(response)
 
     if request.method == 'POST':
@@ -38,7 +39,8 @@ def user_login(request):
                     request.session['name'] = user.name
                     request.session['position'] = user.position
                     response['msg'] = 'login successfully'
-                    response['error_num'] = 1
+                    response['error_num'] = 0
+                    response['position'] = user.position
                     return JsonResponse(response)
                 else:
                     response['msg'] = 'login failed: wrong password'
