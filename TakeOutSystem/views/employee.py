@@ -86,8 +86,19 @@ def show_order(request):
             orders = Order.objects.filter(Q(Q(order_status='完成备餐') | Q(order_status='骑手已接单')))
         elif request.session.get('position') == 'admin' or request.session.get('position') == 'r_manager':
             orders = Order.objects.all()
-        response['list'] = json.loads(serializers.serialize('json', orders))
+        else:
+            orders = Order.objects.all()
+
+        listall = json.loads(serializers.serialize("json", orders))
+        total = int(len(listall))
+        pagesize = int(request.GET.get('pagesize'))
+        pagenum = int(request.GET.get('pagenum'))
+        if pagesize > total:
+            pagesize = total
+        sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
+        response['list'] = sort_ls[pagenum - 1]
         response['msg'] = 'successfully'
+        response['total'] = total
         response['error_num'] = 0
     except Exception as e:
         response['msg'] = str(e)
