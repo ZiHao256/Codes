@@ -7,23 +7,13 @@ class UserForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    gender = (
-        ('male', "男"),
-        ('female', "女"),
-    )
-    POSITION_CHOICES=(
-        (u'A', u'admin'),
-        (u'E', u'employee'),
-        (u'S', u'r_staff'),
-        (u'M', u'r_manager'),
-        (u'D', u'r_delivery')
-    )
     name = forms.CharField(label="name", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
     employee_id = forms.IntegerField(label="employee_id", widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label="password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="ensure password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     department = forms.CharField(label="department", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    position = forms.CharField(label="position")
+    # position = forms.ChoiceField(label="position", choices=POSITION_CHOICES)
+    position = forms.CharField(label="position", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
     # email = forms.EmailField(label="e-mail", widget=forms.EmailInput(attrs={'class': 'form-control'}))
     # sex = forms.ChoiceField(label='gender', choices=gender)
 
@@ -74,9 +64,10 @@ class OrderForm(forms.Form):
         (u'0', u'预定状态'),
         (u'1', u'订单开始'),
         (u'2', u'完成支付'),
-        (u'3', u'完成备餐'),
-        (u'4', u'完成接单'),
-        (u'5', u'完成送达')
+        (u'3', u'商家已接单'),
+        (u'4', u'完成备餐'),
+        (u'5', u'骑手已接单'),
+        (u'6', u'完成送达')
     )
     METHOD_CHOICES = (
         (u'W', u'微信支付'),
