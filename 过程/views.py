@@ -9,9 +9,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import json
 from datetime import datetime
-from .forms import UserForm, RegisterForm, ComplainForm, EmployeeForm, AccountForm, MenuForm, LocationForm, OrderForm
+from TakeOutSystem.forms import UserForm, RegisterForm, ComplainForm, EmployeeForm, AccountForm, MenuForm, LocationForm, OrderForm
 
-from .models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu, Complaint
+from TakeOutSystem.models import Employee, Balance_account, Location, Menu, Order, turnover, order_menu, Complaint
 
 
 def object_to_json(obj):
@@ -692,7 +692,7 @@ def complain(request):
                 if complain_form.is_valid():
                     order_id = complain_form.cleaned_data['order_id']
                     time = datetime.now()
-                    # type = complain_form.cleaned_data['type']
+                    type = complain_form.cleaned_data['type']
                     content = complain_form.cleaned_data['content']
                     feedback = complain_form.cleaned_data['feedback']
                     complaint = Complaint(
@@ -862,7 +862,7 @@ def change_one_complaint(request):
         response['error_num'] = 0
         if complain_form.is_valid():
             order_id = complain_form.cleaned_data['order_id']
-            # type = complain_form.cleaned_data['type']
+            type = complain_form.cleaned_data['type']
             feed_back = complain_form.cleaned_data['feedback']
             complaint = Complaint.objects.get(order_id=order_id)
             complaint.feedback = feed_back

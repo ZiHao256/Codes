@@ -1,8 +1,15 @@
-from django.conf.urls import url, include
-from .views import *
+from django.conf.urls import url
+
+from TakeOutSystem.views.administer import *
+from TakeOutSystem.views.employee import *
+from TakeOutSystem.views.r_delivery import *
+from TakeOutSystem.views.r_manager import *
+from TakeOutSystem.views.r_staff import *
+from TakeOutSystem.views.user import *
 
 urlpatterns = [
-    # user
+
+    # views
     url(r'user_login$', user_login),
     url(r'user_logout$', user_logout),
     url(r'user_register$', user_register),
