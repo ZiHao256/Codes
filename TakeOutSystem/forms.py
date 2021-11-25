@@ -88,7 +88,7 @@ class OrderForm(forms.Form):
     delivery_time = forms.DateTimeField(label='delivery_time', widget=forms.TextInput(attrs={'class': 'form-control'}))
     remark = forms.CharField(label='remark', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     eat_in_store = forms.CharField(label='eat_in_store', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    specify_delivery_time = forms.DateTimeField(label='specify_delivery_time', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    specify_delivery_time = forms.CharField(label='specify_delivery_time', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     location = forms.IntegerField(label='location', widget=forms.TextInput(attrs={'class': 'form-control'}))
     payment_method = forms.CharField(label='payment_method', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     payment_amount = forms.FloatField(label='payment_amount', widget=forms.TextInput(attrs={'class': 'form-control'}))

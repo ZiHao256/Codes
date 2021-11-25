@@ -19,7 +19,7 @@ from TakeOutSystem.views.user import login
 import TakeOutSystem.views.urls
 
 urlpatterns = [
-    url(r'', login()),
+    #url(r'', login),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(TakeOutSystem.views.urls)),
 ]

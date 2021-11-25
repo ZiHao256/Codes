@@ -61,7 +61,7 @@ def show_dish(request):
         if request.GET.get('dish_name') is None:
             dish = Menu.objects.all()
             orders_total = Order.objects.all()
-            response['total'] = len(orders_total)
+            response['total'] = len(orders_total) + 20001
             response['list'] = json.loads(serializers.serialize("json", dish))
             response['msg'] = 'success'
             response['error_num'] = 0
@@ -69,7 +69,7 @@ def show_dish(request):
             dish = Menu.objects.get(dish_name=request.GET.get('dish_name'))
             request.session['dish_name'] = dish.dish_name
             orders_total = Order.objects.all()
-            response['total'] = len(orders_total)
+            response['total'] = len(orders_total) + 20001
             response['list'] = object_to_json(dish)
             response['msg'] = 'show success'
             response['error_num'] = 0
@@ -125,10 +125,11 @@ def accept_dish_order(request):
                     dish.save()
 
                     order.meal_complete_time = datetime.now()
+                    order.order_status = '商家已接单'
                     order.save()
 
                     response['msg'] = 'accept_dish_order successfully'
-                    order.order_status = '商家已接单'
+
                     response['error_num'] = 0
                 else:
                     response['msg'] = '对方还未完成支付'

@@ -1,8 +1,10 @@
 # Create your views here.
 import json
-from datetime import datetime
+from datetime import datetime, date
+
 
 from django.core import serializers
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -37,13 +39,16 @@ def order_dish(request):
             except:
                 menu = Menu.objects.get(dish_name=order_form.cleaned_data['dish_name'])
                 amount = menu.price
+                today = date.today()
+                specify_delivery_time = str(today)+str(order_form.cleaned_data['specify_delivery_time'])[10:]
+
                 order = Order(
                     order_id=order_id,
                     order_status='预定状态',
                     build_time=datetime.now(),
                     remark=order_form.cleaned_data['remark'],
                     eat_in_store=order_form.cleaned_data['eat_in_store'],
-                    specify_delivery_time=order_form.cleaned_data['specify_delivery_time'],
+                    specify_delivery_time=specify__delivery_time,
                     location=Location.objects.get(loc_id=order_form.cleaned_data['location']),
                     payment_method=order_form.cleaned_data['payment_method'],
                     payment_amount=amount,
@@ -90,7 +95,7 @@ def show_order(request):
             orders = Order.objects.all()
 
         listall = json.loads(serializers.serialize("json", orders))
-        total = int(len(listall))
+        total = len(listall)
         pagesize = int(request.GET.get('pagesize'))
         pagenum = int(request.GET.get('pagenum'))
         if pagesize > total:
@@ -128,7 +133,7 @@ def pay(request):
                 Balance.save()
 
                 t = turnover(
-                    account_id=Balance_account.objects.get(account_id=order.cus_id_id),
+                    account_id=Balance_account.objects.get(account_id=order.payment_account_id_id),
                     business_type='支付',
                     amount=order_menu.objects.get(order_id=order_id).amount
                 )
