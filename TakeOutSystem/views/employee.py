@@ -170,7 +170,7 @@ def show_turnovers(request):
         if pagesize > total:
             pagesize = total
         sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
-        
+
         response['total'] = total
         response['list'] = sort_ls[pagenum - 1]
         response['error_num'] = 1

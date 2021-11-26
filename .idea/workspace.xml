@@ -66,7 +66,7 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../TakeOut_0.2/TakeOut_0.1/Code" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
@@ -188,7 +188,9 @@
       <workItem from="1637804206101" duration="244000" />
       <workItem from="1637804465464" duration="1213000" />
       <workItem from="1637821177515" duration="3995000" />
-      <workItem from="1637825558921" duration="1054000" />
+      <workItem from="1637825558921" duration="1135000" />
+      <workItem from="1637827049398" duration="632000" />
+      <workItem from="1637838728640" duration="25000" />
     </task>
     <task id="LOCAL-00001" summary="xx">
       <created>1636710572954</created>
@@ -230,10 +232,10 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="652" y="28" key="CommitChangelistDialog2/0.0.1536.864@0.0.1536.864" timestamp="1636710742167" />
-    <state x="740" y="294" key="FileChooserDialogImpl" timestamp="1637804449680">
+    <state x="740" y="294" key="FileChooserDialogImpl" timestamp="1637838752343">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="740" y="294" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1637804449680" />
+    <state x="740" y="294" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1637838752343" />
     <state width="914" height="177" key="GridCell.Tab.0.bottom" timestamp="1637825203088">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>

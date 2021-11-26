@@ -69,7 +69,7 @@ def show_dish(request):
             if pagesize > total:
                 pagesize = total
             sort_ls = [listall[i:i + pagesize] for i in range(0, len(listall), pagesize)]
-
+            response['total_dish'] = total
             response['total'] = len(orders_total) + 20001
             response['list'] = sort_ls[pagenum-1]
             response['msg'] = 'success'
