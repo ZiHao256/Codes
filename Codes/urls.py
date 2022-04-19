@@ -18,9 +18,12 @@ from django.urls import path
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView
-import TakeOutSystem.urls
+import TakeOutSystem.views.urls
+from TakeOutSystem.views.user import login
+from django.urls import path
 
 urlpatterns = [
+    path(r'',login),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include(TakeOutSystem.urls)),
+    url(r'^api/', include(TakeOutSystem.views.urls)),
 ]

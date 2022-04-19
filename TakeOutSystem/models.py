@@ -47,17 +47,17 @@ class turnover(models.Model):
 class Menu(models.Model):
     dish_name = models.CharField(max_length=255, primary_key=True, null=False)
     r_staff_id = models.ForeignKey("Employee", on_delete=models.CASCADE, null=False)
-    price = models.FloatField(null=False, default=0.0)
+    price = models.FloatField(null=True, default=0.0)
     picture = models.ImageField()
     stock = models.IntegerField(default=0, null=False)
-
+    special_offer = models.IntegerField(default=10, null=True)
 
 class Location(models.Model):
     loc_id = models.IntegerField(primary_key=True, null=False)
-    time = models.DateTimeField(null=True, )
     building = models.CharField(max_length=255, null=False)
     floor = models.IntegerField(null=False, default=1)
     room = models.CharField(max_length=255, null=False, default=0)
+    time = models.DateTimeField(null=True)
 
 
 class Order(models.Model):
@@ -65,9 +65,10 @@ class Order(models.Model):
         (u'0', u'预定状态'),
         (u'1', u'订单开始'),
         (u'2', u'完成支付'),
-        (u'3', u'完成备餐'),
-        (u'4', u'完成接单'),
-        (u'5', u'完成送达')
+        (u'3', u'商家已接单'),
+        (u'4', u'完成备餐'),
+        (u'5', u'骑手已接单'),
+        (u'6', u'完成送达')
     )
     METHOD_CHOICES = (
         (u'W', u'微信支付'),
@@ -79,6 +80,7 @@ class Order(models.Model):
         (u'W', u'外送')
     )
     order_id = models.IntegerField(primary_key=True, unique=True, null=False)
+    dish_name = models.CharField(max_length=20, null=True)
     date = models.DateTimeField(null=True)
     order_status = models.CharField(choices=STATUS_CHOICES, max_length=20, null=False, default='预定状态')
     build_time = models.DateTimeField(null=True)

@@ -7,23 +7,13 @@ class UserForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    gender = (
-        ('male', "男"),
-        ('female', "女"),
-    )
-    POSITION_CHOICES=(
-        (u'A', u'admin'),
-        (u'E', u'employee'),
-        (u'S', u'r_staff'),
-        (u'M', u'r_manager'),
-        (u'D', u'r_delivery')
-    )
     name = forms.CharField(label="name", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
     employee_id = forms.IntegerField(label="employee_id", widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label="password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="ensure password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     department = forms.CharField(label="department", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    position = forms.CharField(label="position")
+    # position = forms.ChoiceField(label="position", choices=POSITION_CHOICES)
+    position = forms.CharField(label="position", max_length=256, widget=forms.TextInput(attrs={'class': 'form-control'}))
     # email = forms.EmailField(label="e-mail", widget=forms.EmailInput(attrs={'class': 'form-control'}))
     # sex = forms.ChoiceField(label='gender', choices=gender)
 
@@ -34,9 +24,9 @@ class ComplainForm(forms.Form):
         (u'r_delivery', u'餐厅外卖员')
     )
     order_id = forms.IntegerField(label='order_id')
-    # type = forms.ChoiceField(label='type', choices=TYPE_CHOICES)
+    type = forms.CharField(label='type', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     content = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    feedback = forms.CharField(label='content', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    feedback = forms.CharField(label='feedback', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class EmployeeForm(forms.Form):
@@ -60,7 +50,7 @@ class MenuForm(forms.Form):
     price = forms.IntegerField(label='price')
     # picture = forms.ImageField(label='picture', widget=forms.TextInput(attrs={'class': 'form-control'}))
     stock = forms.IntegerField(label='stock', widget=forms.TextInput(attrs={'class': 'form-control'}))
-
+    special_offer = forms.IntegerField(label='special_offer')
 
 class LocationForm(forms.Form):
     loc_id = forms.IntegerField(label='loc_id', widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -97,7 +87,7 @@ class OrderForm(forms.Form):
     delivery_time = forms.DateTimeField(label='delivery_time', widget=forms.TextInput(attrs={'class': 'form-control'}))
     remark = forms.CharField(label='remark', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     eat_in_store = forms.CharField(label='eat_in_store', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    specify_delivery_time = forms.DateTimeField(label='specify_delivery_time', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    specify_delivery_time = forms.CharField(label='specify_delivery_time', widget=forms.TextInput(attrs={'class': 'form-control'}))
     location = forms.IntegerField(label='location', widget=forms.TextInput(attrs={'class': 'form-control'}))
     payment_method = forms.CharField(label='payment_method', max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
     payment_amount = forms.FloatField(label='payment_amount', widget=forms.TextInput(attrs={'class': 'form-control'}))
